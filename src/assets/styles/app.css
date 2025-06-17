@@ -1,0 +1,19 @@
+.navbar-custom {
+  background: linear-gradient(90deg, #4e54c8, #8f94fb);
+}
+.nav-link {
+  color: white !important;
+}
+.nav-link:hover {
+  color: #ffdd57 !important;
+  cursor: pointer;
+}
+.search-bar {
+  max-width: 400px;
+}
+.badge-cart {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 0.75rem;
+}
