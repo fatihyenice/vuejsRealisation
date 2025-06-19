@@ -17,3 +17,57 @@
   right: 5px;
   font-size: 0.75rem;
 }
+
+.card-body .btn.btn-primary {
+  float: right;
+  margin-top: 10px;
+}
+
+.prixProduit {
+  font-weight: 500;
+  display: block;
+  font-size: 1.2em;
+  margin-top: 15px;
+  background: #000000d8;
+  color: #fff;
+  width: 23%;
+  text-align: center;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+#products {
+  transition: all 0.2s;
+}
+
+#products:hover {
+  cursor: pointer;
+  opacity: 0.8;
+  transform: scale(1.01);
+  transition: all 0.2s;
+}
+.card-body {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.card-body button {
+  margin-top: auto;
+  display: inline-block;
+}
+
+.card-title {
+  font-size: 2em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.img-fixed-size {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+  border-radius: 4px;
+}

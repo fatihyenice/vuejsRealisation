@@ -1,27 +1,35 @@
 <template>
     <div class="container mt-5">
-        <div class="row g-4">
-            <Card title="Whey protéine" urlImage="https://www.optigura.fr/img/prods/1153/main-w500h500@2x.08209.webp"
-                description="Protéine en poudre de 1000g, sans lactose" @detail="afficheDetail" />
-        </div>
-
-        <div class="container mt-3" v-if="detail">
-            {{ detail }}
+        <div class="row g-5">
+            <div class="col-md-4" v-for="(produit, index) in produits" :key="index">
+                <Router-link :to="`detail-produits/${produit.id}`" class="text-decoration-none text-dark">
+                    <Card :prix="produit.prix" :title="produit.nom_produit" :urlImage="produit.url"
+                        :description="produit.description" />
+                </Router-link>
+            </div>
         </div>
     </div>
 </template>
 
+
 <script setup>
-import { ref } from 'vue';
-import Card from './Card.vue';
+import { onMounted, ref } from 'vue';
+import Card from './CardProduit.vue';
+import axios from 'axios';
 
-const detail = ref(null);
+const message = ref('Connexion au back end');
+const produits = ref([]);
 
-const afficheDetail = (details) => {
-    if (detail.value === details) {
-        detail.value = null;
-    } else {
-        detail.value = details;
+const rechargeProduit = async () => {
+    try {
+        const res2 = await axios.get('http://localhost:3000/produits');
+        produits.value = res2.data;
+    } catch (err) {
+        message.value = 'Erreur de connexion au backend'
     }
 }
+
+onMounted(async () => {
+    rechargeProduit();
+}); 
 </script>
