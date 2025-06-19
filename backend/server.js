@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
+const bcrypt = require('bcrypt')
 
 const app = express();
 app.use(cors());
@@ -57,27 +58,48 @@ app.post('/addProduits', (req, res) => {
     });
 });
 
-app.post('/register', (req,res) => {
-
+// INSCRIPTION
+app.post('/register', (req, res) => {
     const { email, mdpUn, mdpDeux } = req.body;
 
-    if(!email || !mdpDeux || !mdpUn){
-        return res.status(400).json({ message: "Adresse mail et mot de passe requis !"})
+    if (!email || !mdpUn || !mdpDeux) {
+        return res.status(400).json({ message: "Adresse mail et mot de passe requis !" });
     }
 
-    const sql = "INSERT INTO users(email,password) VALUES (?,?)";
-    const donnees = [email, mdpUn, mdpDeux];
+    if (mdpUn !== mdpDeux) {
+        return res.status(400).json({ message: "Les mots de passe ne correspondent pas !" });
+    }
 
-    connection.query(sql,donnees, (err, resultats) => {
-        if(err){
-            console.error("Une erreur s'est produite !");
-            return;
-        }
+    
 
-        res.json({message: "Votre inscription à été effectué !"})
-    })
-})
+    const reqq = "SELECT email FROM users WHERE email = ?";
+    const mail = [email]
 
+    connection.query(reqq, mail, (err,resultats) => {
+       if(resultats.length > 0) {
+        return res.status(400).json({ message: "Adresse mail utilisé !" });
+       }
+
+        bcrypt.hash(mdpUn, 10, (err, hash) => {
+            if (err) {
+                console.error("Erreur de hashage :", err);
+                return res.status(500).json({ message: "Erreur lors du hashage du mot de passe" });
+            }
+
+            const sql = "INSERT INTO users(email, password) VALUES (?, ?)";
+            const donnees = [email, hash];  
+
+            connection.query(sql, donnees, (err, resultats) => {
+                if (err) {
+                    console.error("Erreur lors de l'insertion en base :", err);
+                    return res.status(500).json({ message: "Erreur lors de la création du compte" });
+                }
+
+                res.status(201).json({ message: "Utilisateur enregistré avec succès !" });
+            });
+        });
+    });
+});
 
 app.post('/produitsDetail', (req, res) => {
 

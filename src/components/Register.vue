@@ -40,7 +40,7 @@ const success = ref(false);
 const error = ref(false);
 
 const inscription = async () => {
-    if (email.value == "" || mdpUn == "" || mdpDeux == "") {
+    if (email.value == "" || mdpUn.value == "" || mdpDeux.value == "") {
         error.value = "Veuillez remplir les champs vides !";
         return;
     }
@@ -59,7 +59,12 @@ const inscription = async () => {
         mdpDeux.value = "";
         error.value = false
     } catch (e) {
-        console.log("Une erreur s'est produite !");
+        success.value = false;
+        if (e.response.data.message) {
+            error.value = e.response.data.message;
+        } else {
+            error.value = "Une erreur s'est produite !";
+        }
     }
 }
 </script>

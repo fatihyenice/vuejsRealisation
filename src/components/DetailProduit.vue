@@ -10,8 +10,10 @@
     </div>
 
     <div v-else>
-        <div class="alert alert-danger text-center mt-5">
-            Le produit est introuvable ou une erreur est survenue.
+        <div class="container">
+            <div class="alert alert-danger text-center mt-5">
+                Le produit est introuvable ou une erreur est survenue.
+            </div>
         </div>
     </div>
 </template>
@@ -35,7 +37,8 @@ onMounted(async () => {
         donnesProduitRecuperer.value = recupProduit.data;
         etat.value = "ok";
     } catch (e) {
-        console.log("Une erreur s'est produite !")
+        console.log("Une erreur s'est produite !");
+        etat.value = "erreur"
     }
 
 })
