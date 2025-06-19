@@ -2,9 +2,9 @@
 
   <nav class="navbar navbar-expand-lg navbar-custom shadow">
     <div class="container-fluid">
-      <a class="navbar-brand text-white fw-bold" href="#">
+      <RouterLink class="navbar-brand text-white fw-bold" to="/">
         <i class="bi bi-bag-heart-fill me-2"></i>FYDEV-Shop
-      </a>
+      </RouterLink>
       <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>

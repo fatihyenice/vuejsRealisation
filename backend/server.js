@@ -70,14 +70,12 @@ app.post('/register', (req, res) => {
         return res.status(400).json({ message: "Les mots de passe ne correspondent pas !" });
     }
 
-    
-
     const reqq = "SELECT email FROM users WHERE email = ?";
     const mail = [email]
 
     connection.query(reqq, mail, (err,resultats) => {
        if(resultats.length > 0) {
-        return res.status(400).json({ message: "Adresse mail utilisé !" });
+        return res.status(400).json({ message: "L'adresse mail est indisponible !" });
        }
 
         bcrypt.hash(mdpUn, 10, (err, hash) => {
@@ -122,6 +120,14 @@ app.post('/produitsDetail', (req, res) => {
         res.json(result[0]);
     })
 })
+
+app.post('/login', (req, res) => {
+    const { email, mdp } = req.body
+    
+    if(!email || !mdp){
+        return res.status(400).json({message: "Veuillez remplir les champs vides !"})
+    }
+});
 
 app.listen(3000, () => {
     console.log('Backend lancé sur http://localhost:3000');
