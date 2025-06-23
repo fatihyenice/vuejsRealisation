@@ -2,39 +2,61 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 
-export const authStore = defineStore('auth', () => {
-
+export const authStore = defineStore("auth", () => {
   const isLogged = ref(false);
+  const user = ref(null);
 
   const app = axios.create({
-    baseURL: 'http://localhost:3000',
-    withCredentials: true
+    baseURL: "http://localhost:3000",
+    withCredentials: true,
   });
-  
 
   const checkSession = async () => {
     try {
-      const res = await app.get('/checkSession'); 
+      const res = await app.get("/checkSession");
       isLogged.value = !!res.data.userId;
+      user.value = res.data;  
     } catch (e) {
       isLogged.value = false;
-      console.log("Impossible de récupérer une session", e);
+      user.value = null;
+      console.warn("Erreur de session :", e);
     }
   };
-  
-  
+
   const login = () => {
     isLogged.value = true;
+    localStorage.setItem("auth_event", JSON.stringify({ type: "login", time: Date.now() }));
   };
 
   const logout = async () => {
     try {
-      const res = await app.get('/logout');
+      await app.get("/logout");
       isLogged.value = false;
+      localStorage.setItem("auth_event", JSON.stringify({ type: "logout", time: Date.now() }));
     } catch (e) {
-      isLogged.value = true; 
+      console.error("Erreur de logout", e);
     }
   };
+ 
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", (event) => {
+      if (event.key === "auth_event") {
+        checkSession();  
+      }
+    });
+  } 
+ 
+  const connect = async (email, mdp) => {
+    try {
+      const res = await app.post('/login', { email, mdp }, { withCredentials: true });
+      isLogged.value = !!res.data.userId;
+      localStorage.setItem('auth_event', JSON.stringify({ type: 'login', time: Date.now() }));  
+      checkSession();
+      return { success: true };
+    } catch (e) { 
+      return { success: false, error: e.response?.data?.message || 'Erreur inconnue' };
+    }
+  }; 
 
-  return { checkSession, logout, app, login, isLogged };
+  return { checkSession, connect, logout, login, isLogged, user };
 });

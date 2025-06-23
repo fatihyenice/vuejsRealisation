@@ -14,11 +14,16 @@
       <div class="header-right">
         <nav>
           <LinkHeader link="/" class="nav-btn" label="Accueil" />
-          <LinkHeader link="/add" class="nav-btn" label="Ajouter un produit" />
+          <LinkHeader v-if="auth.isLogged" link="/add" class="nav-btn" label="Ajouter un produit" />
           <LinkHeader v-if="!auth.isLogged" link="/connexion" class="nav-btn" label="Connexion" />
           <LinkHeader v-if="!auth.isLogged" link="/inscription" class="nav-btn" label="Inscription" />
-          <LinkHeader v-if="auth.isLogged" link="/me" class="nav-btn" label="Moi" />
+          <LinkHeader v-if="auth.isLogged" link="/connexion" class="nav-btn"
+            :label="`${auth.user.nom} ${auth.user.prenom}`" />
+          <LinkHeader v-if="auth.isLogged" link="/panier" class="nav-btn">
+            <i class="ri-shopping-cart-fill"></i>
+          </LinkHeader>
           <LinkHeader v-if="auth.isLogged" class="nav-btn" @click="deconnect" label="Déconnexion" />
+
         </nav>
       </div>
     </div>

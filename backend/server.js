@@ -5,10 +5,12 @@ const bcrypt = require('bcrypt');
 const session = require('express-session')
 
 const app = express();
+
 app.use(cors({
     origin: 'http://localhost:5173',  
     credentials: true
 }));
+
 app.use(express.json());
 
 app.use(session({
@@ -77,7 +79,7 @@ app.post('/addProduits', (req, res) => {
 
 // INSCRIPTION
 app.post('/register', (req, res) => {
-    const { email, mdpUn, mdpDeux } = req.body;
+    const { email, nom, prenom, mdpUn, mdpDeux } = req.body;
 
     if (!email || !mdpUn || !mdpDeux) {
         return res.status(400).json({ message: "Adresse mail et mot de passe requis !" });
@@ -101,8 +103,8 @@ app.post('/register', (req, res) => {
                 return res.status(500).json({ message: "Erreur lors du hashage du mot de passe" });
             }
 
-            const sql = "INSERT INTO users(email, password) VALUES (?, ?)";
-            const donnees = [email, hash];  
+            const sql = "INSERT INTO users(nom,prenom, email, password) VALUES (?,?,?,?)";
+            const donnees = [nom,prenom,email, hash];  
 
             connection.query(sql, donnees, (err, resultats) => {
                 if (err) {
@@ -164,28 +166,37 @@ app.post('/login', (req, res) => {
                     if (err) {
                         console.error("Erreur session :", err);
                         return res.status(500).json({ message: "Erreur de session" });
-                    }
-                
-                    return res.status(200).json({ message: "Connecté !", userId: req.session.userId });
+                    } 
+                    return res.status(200).json({ message: "Connecté !"});
                 }); 
             } else {
                 return res.status(400).json({ message: "Mot de passe incorrect" })
             }
           });
     })
-});
+}); 
 
-app.get('/me', (req, res) => {
+app.get('/checkSession', (req, res) => {
     if (req.session.userId) {
-        res.json({ loggedIn: true, userId: req.session.userId });
-    } else {
-        res.json({ loggedIn: false });
-    }
-});
+        const sql = "SELECT * FROM users WHERE id = ? LIMIT 1";
+        connection.query(sql, [req.session.userId], (err, result) => {
+            if (err) {
+                console.error("Erreur lors de la récupération de l'utilisateur :", err);
+                return res.status(500).json({ message: "Erreur serveur" });
+            }
 
-app.get('/checkSession', (req, res) => { 
-    if (req.session.userId) {
-        res.json({ loggedIn: true, userId: req.session.userId }); // 👈 AJOUT
+            if (result.length === 0) {
+                return res.status(404).json({ message: "Utilisateur introuvable" });
+            }
+
+            res.json({
+                email: result[0].email, 
+                loggedIn: true,
+                userId: result[0].id,
+                nom: result[0].nom,
+                prenom: result[0].prenom,
+            });
+        });
     } else {
         res.json({ loggedIn: false });
     }

@@ -4,6 +4,7 @@ import Login from "./components/Login.vue"
 import Register from "./components/Register.vue"
 import DetailProduit from "./components/DetailProduit.vue"
 import Profil from "./components/Profil.vue"
+import Panier from "./components/Panier.vue"
 
 export const routes = [
     { path: "/", component: Accueil }, 
@@ -12,5 +13,6 @@ export const routes = [
     { path: "/inscription", component: Register },
     { path: "/detail-produits/:id", component: DetailProduit},
     { path: "/me", component: Profil},
+    { path: "/panier", component: Panier }, 
     { path: '/:pathMatch(.*)*', redirect: '/' }
 ]

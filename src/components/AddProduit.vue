@@ -1,5 +1,5 @@
 <template>
-    <div class="ajout-produit-container">
+    <div class="ajout-produit-container" v-if="auth.isLogged">
         <div class="error-message" v-if="error" role="alert">
             {{ error }}
         </div>
@@ -33,9 +33,18 @@
             <button type="submit" class="btn-ajouter">Ajouter le produit</button>
         </form>
     </div>
+
+    <div v-else>
+        <router-link to="/connexion">
+            <div class="error-message-full">
+                Vous devez être connecté pour pouvoir ajouter des produits ! Cliquez ici pour vous connecter !
+            </div>
+        </router-link>
+    </div>
 </template>
 
 <script setup>
+import { authStore } from "@/stores/auth";
 import axios from "axios";
 import { ref } from "vue";
 
@@ -45,6 +54,8 @@ const prix_produit = ref('');
 const urlimage = ref('');
 const success = ref(false);
 const error = ref(false);
+
+const auth = authStore();
 
 const ajouterProduit = async () => {
     error.value = false;

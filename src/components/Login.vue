@@ -1,5 +1,5 @@
 <template>
-    <div class="ajout-produit-container">
+    <div class="ajout-produit-container" v-if="!auth.isLogged">
         <div class="error-message" v-if="error" role="alert">
             {{ error }}
         </div>
@@ -9,7 +9,7 @@
         </div>
 
         <h1>Connexion</h1>
-        <form @submit.prevent="connect">
+        <form @submit.prevent="handleConnect">
             <div class="form-group">
                 <label for="exampleInputEmail1">Adresse mail</label>
                 <input type="email" class="form-control" v-model="adressemail" placeholder="Azerty@exemple.com"
@@ -23,36 +23,39 @@
             <button type="submit" class="btn-ajouter">Me connecter</button>
         </form>
     </div>
+
+    <div v-else>
+        Vous êtes connecté !
+    </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { provide } from 'vue';
+import { ref, watch } from 'vue';
 import axios from 'axios';
 import { authStore } from '@/stores/auth';
 
-const adressemail = ref('');
-const mdp = ref('');
-const success = ref(false);
-const error = ref(false);
+const adressemail = ref("");
+const mdp = ref("");
+const error = ref("");
+const success = ref("");
 const auth = authStore();
 
-const connect = async () => {
-    success.value = false;
-    error.value = false;
-    try {
-        const connectTeste = await axios.post('http://localhost:3000/login', {
-            email: adressemail.value,
-            mdp: mdp.value
-        }, {
-            withCredentials: true
-        })
-
-        auth.login();
-    } catch (e) {
-        if (e.response.data.message) {
-            error.value = e.response.data.message;
-        }
+watch(() => auth.isLogged, (isLogged) => {
+    if (!isLogged) {
+        adressemail.value = "";
+        mdp.value = "";
+        success.value = false;
+        error.value = false;
     }
-}
+});
+
+const handleConnect = async () => {
+    const result = await auth.connect(adressemail.value, mdp.value);
+    if (result.success) {
+        success.value = "Connecté !";
+    } else {
+        error.value = result.error;
+    }
+};
+
 </script>

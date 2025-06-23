@@ -16,7 +16,9 @@
                     <input type="number" id="quantite" v-model.number="quantite" min="1" />
                 </div>
 
-                <button class="btn-ajouter" @click="ajouterAuPanier">Ajouter au panier</button>
+                <button class="btn-ajouter" v-if="auth.isLogged" @click="ajouterAuPanier">Ajouter au panier</button>
+                <RouterLink class="btn-noconnecte" to="/connexion" v-else @click="ajouterAuPanier">Me connecter
+                </RouterLink>
             </div>
         </div>
     </div>
@@ -27,6 +29,10 @@
 </template>
 
 <script setup>
+import { authStore } from "@/stores/auth"
+
+const auth = authStore();
+
 const props = defineProps({
     produit: Object
 })

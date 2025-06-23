@@ -1,5 +1,5 @@
 <template>
-    <div class="ajout-produit-container">
+    <div class="ajout-produit-container" v-if="!auth.isLogged">
         <div class="error-message" v-if="error" role="alert">
             {{ error }}
         </div>
@@ -9,7 +9,14 @@
         </div>
         <h1>Inscription</h1>
         <form @submit.prevent="inscription" class="formulaire-produit">
-
+            <div class="form-group">
+                <label for="nom" class="form-label">Votre nom</label>
+                <input type="text" class="form-control" v-model="nom" id="nom" placeholder="Yenice">
+            </div>
+            <div class="form-group">
+                <label for="prenom" class="form-label">Adresse prénom</label>
+                <input type="text" class="form-control" v-model="prenom" id="prenom" placeholder="Fatih">
+            </div>
             <div class="form-group">
                 <label for="email" class="form-label">Adresse e-mail</label>
                 <input type="email" class="form-control" v-model="email" id="email" placeholder="exemple@domaine.com">
@@ -31,17 +38,22 @@
 <script setup>
 import axios from "axios";
 import { ref } from "vue";
+import { authStore } from "@/stores/auth";
 
+const nom = ref('');
+const prenom = ref('');
 const email = ref('');
 const mdpUn = ref('');
 const mdpDeux = ref('');
 const success = ref(false);
 const error = ref(false);
 
+const auth = authStore();
+
 const inscription = async () => {
     success.value = false;
     error.value = false;
-    if (email.value == "" || mdpUn.value == "" || mdpDeux.value == "") {
+    if (email.value == "" || nom.value == "" || prenom.value == "" || mdpUn.value == "" || mdpDeux.value == "") {
         error.value = "Veuillez remplir les champs vides !";
         return;
     }
@@ -49,6 +61,8 @@ const inscription = async () => {
     try {
         const axinscription = await axios.post('http://localhost:3000/register/', {
             email: email.value,
+            nom: nom.value,
+            prenom: prenom.value,
             mdpUn: mdpUn.value,
             mdpDeux: mdpDeux.value
         })
