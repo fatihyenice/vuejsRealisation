@@ -1,35 +1,36 @@
 <template>
-    <div class="container mt-5">
-        <h1>Ajouter un produit</h1>
+    <div class="ajout-produit-container">
+        <div class="error-message" v-if="error" role="alert">
+            {{ error }}
+        </div>
 
-        <form @submit.prevent="ajouterProduit">
+        <div class="success-message" v-if="success" role="alert">
+            {{ success }}
+        </div>
+        <h1 class="form-title">Ajouter un produit</h1>
+
+        <form @submit.prevent="ajouterProduit" class="formulaire-produit">
             <div class="form-group">
-                <label for="exampleInputEmail1">Nom du produit</label>
-                <input type="text" class="form-control mt-2" v-model="nom_produit" id="exampleInputEmail1"
-                    aria-describedby="emailHelp" placeholder="Entrez le nom du produit">
+                <label for="nom">Nom du produit</label>
+                <input type="text" v-model="nom_produit" id="nom" placeholder="Entrez le nom du produit" />
             </div>
 
-            <label for="descriptif" class="mt-3">Descriptif du produit</label>
-            <div class="form-floating mt-2">
-                <textarea class="form-control" v-model="descriptif_produit" placeholder="Leave a comment here"
-                    id="descriptif" style="height: 100px"></textarea>
-                <label for="floatingTextarea2">Description du produit</label>
+            <div class="form-group">
+                <label for="descriptif">Descriptif du produit</label>
+                <textarea id="descriptif" v-model="descriptif_produit" placeholder="Description du produit"></textarea>
             </div>
 
-            <div class="form-group mt-2">
-                <label for="prix">Prix du produit</label><br>
-                <input type="number" v-model="prix_produit" class="form-control d-block w-75" min="5" value="5"
-                    id="prix">
-                <span>€</span>
+            <div class="form-group">
+                <label for="prix">Prix du produit (€)</label>
+                <input type="number" v-model.number="prix_produit" id="prix" min="5" />
             </div>
 
-            <div class="form-group mt-2">
+            <div class="form-group">
                 <label for="urlimg">URL image du produit</label>
-                <input type="text" v-model="urlimage" class="form-control mt-2" id="urlimg" aria-describedby="emailHelp"
-                    placeholder="Entrez le nom du produit">
+                <input type="text" v-model="urlimage" id="urlimg" placeholder="https://..." />
             </div>
 
-            <button type="submit" class="btn btn-primary float-end mt-3">Ajouter le produit</button>
+            <button type="submit" class="btn-ajouter">Ajouter le produit</button>
         </form>
     </div>
 </template>
@@ -42,10 +43,14 @@ const nom_produit = ref('');
 const descriptif_produit = ref('');
 const prix_produit = ref('');
 const urlimage = ref('');
+const success = ref(false);
+const error = ref(false);
 
 const ajouterProduit = async () => {
+    error.value = false;
+    success.value = false;
     try {
-        await axios.post("http://localhost:3000/addProduits/", {
+        const addProduct = await axios.post("http://localhost:3000/addProduits/", {
             nom_produit: nom_produit.value,
             descriptif_produit: descriptif_produit.value,
             prix_produit: prix_produit.value,
@@ -56,8 +61,10 @@ const ajouterProduit = async () => {
         descriptif_produit.value = ''
         prix_produit.value = 0
         urlimage.value = ''
-    } catch (error) {
-        console.error("Erreur lors de l'ajout du produit ❌", error);
+    } catch (e) {
+        if (e.response.data.message) {
+            error.value = e.response.data.message;
+        }
     }
 }
 </script>

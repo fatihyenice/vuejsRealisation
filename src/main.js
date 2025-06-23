@@ -1,18 +1,26 @@
-import 'bootstrap/dist/css/bootstrap.min.css' 
-import 'bootstrap/dist/js/bootstrap.bundle.min.js' 
-import 'bootstrap-icons/font/bootstrap-icons.css'
 import './assets/styles/app.css'
+import 'remixicon/fonts/remixicon.css'
+import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from './App.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { routes } from './routes'
+import { routes } from './routes';
+import { authStore } from './stores/auth'
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes,
+  linkActiveClass: 'activedLink',
+  linkExactActiveClass: 'active',
 })
 
-const app = createApp(App)
-app.use(router)
+const pinia = createPinia();
+const app = createApp(App);
+app.use(router);
+app.use(pinia);
+ 
+const auth = authStore();
 
-app.mount("#app")
+auth.checkSession().finally(() => {
+  app.mount("#app");
+});

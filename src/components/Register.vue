@@ -1,30 +1,29 @@
 <template>
-    <div class="container mt-5">
+    <div class="ajout-produit-container">
+        <div class="error-message" v-if="error" role="alert">
+            {{ error }}
+        </div>
+
+        <div class="success-message" v-if="success" role="alert">
+            {{ success }}
+        </div>
         <h1>Inscription</h1>
-        <form @submit.prevent="inscription">
+        <form @submit.prevent="inscription" class="formulaire-produit">
 
-            <div class="alert alert-success" v-if="success" role="alert">
-                {{ success }}
-            </div>
-
-            <div class="alert alert-danger" v-if="error" role="alert">
-                {{ error }}
-            </div>
-
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="email" class="form-label">Adresse e-mail</label>
                 <input type="email" class="form-control" v-model="email" id="email" placeholder="exemple@domaine.com">
             </div>
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="password" class="form-label">Mot de passe</label>
                 <input type="password" class="form-control" v-model="mdpUn" id="password" placeholder="Mot de passe">
             </div>
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="confirm-password" class="form-label">Confirmer le mot de passe</label>
                 <input type="password" class="form-control" v-model="mdpDeux" id="confirm-password"
                     placeholder="Répéter le mot de passe">
             </div>
-            <button type="submit" class="btn btn-primary float-end">S'inscrire</button>
+            <button type="submit" class="btn-ajouter">S'inscrire</button>
         </form>
     </div>
 </template>
@@ -40,6 +39,8 @@ const success = ref(false);
 const error = ref(false);
 
 const inscription = async () => {
+    success.value = false;
+    error.value = false;
     if (email.value == "" || mdpUn.value == "" || mdpDeux.value == "") {
         error.value = "Veuillez remplir les champs vides !";
         return;

@@ -1,13 +1,14 @@
 <template>
-    <div id="products">
-        <img :src="urlImage" class="card-img-top img-fixed-size" alt="Produit 1">
-        <div class="card-body">
+    <div class="card-produit">
+        <img :src="urlImage" alt="Image du produit" class="card-img" />
+
+        <div class="card-content">
             <h5 class="card-title">{{ title }}</h5>
-            <p class="card-text description-fixed"> {{ description }}
-                <button type="button" class="btn btn-primary">Voir le
-                    produit</button>
-                <span class="prixProduit">{{ prix }}€</span>
-            </p>
+            <p class="card-description">{{ description }}</p>
+            <div class="card-footer">
+                <span class="card-price">{{ prix }} €</span>
+                <button class="card-button">Voir le produit</button>
+            </div>
         </div>
     </div>
 </template>

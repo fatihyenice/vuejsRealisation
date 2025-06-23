@@ -1,73 +1,425 @@
-.navbar-custom {
-  background: linear-gradient(90deg, #4e54c8, #8f94fb);
-}
-.nav-link {
-  color: white !important;
-}
-.nav-link:hover {
-  color: #ffdd57 !important;
-  cursor: pointer;
-}
-.search-bar {
-  max-width: 400px;
-}
-.badge-cart {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  font-size: 0.75rem;
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap");
+
+:root {
+  --main-color: #ff6f61;
+  --light-bg: #fff;
+  --dark-text: #222;
+  --border-color: #ddd;
+  --hover-shadow: 0 4px 10px rgba(255, 111, 97, 0.3);
 }
 
-.card-body .btn.btn-primary {
-  float: right;
-  margin-top: 10px;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.prixProduit {
-  font-weight: 500;
-  display: block;
-  font-size: 1.2em;
-  margin-top: 15px;
-  background: #000000d8;
+body {
+  font-family: "Titillium Web", sans-serif;
+  background: #ecf0f1;
+}
+
+img {
+  max-width: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.topbar {
+  background: var(--dark-text);
   color: #fff;
-  width: 23%;
+  font-size: 0.85rem;
   text-align: center;
-  padding: 2px;
-  border-radius: 3px;
+  padding: 0.3rem 0;
 }
 
-#products {
-  transition: all 0.2s;
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--light-bg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  position: relative;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-#products:hover {
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--main-color);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.nav-links.open {
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--light-bg);
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+}
+
+.nav-btn {
+  list-style: none;
+}
+
+.nav-btn a {
+  display: inline-block;
+  padding: 0.5rem 1.2rem;
+  background: var(--light-bg);
+  border: 2px solid var(--main-color);
+  color: var(--main-color);
+  font-weight: 600;
+  border-radius: 7px;
+  text-transform: uppercase;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  font-weight: 400;
+}
+
+.nav-btn a:hover {
+  background: var(--main-color);
+  color: #fff;
+  transform: translateY(-2px);
+  font-weight: 500;
+}
+
+.nav-btn.activedLink {
+  background: var(--main-color);
+  color: #fff;
+  transform: translateY(-2px);
+  font-weight: 500;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-bar {
+  display: flex;
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  overflow: hidden;
+  height: 36px;
+  transition: 0.3s;
+  background: #fff;
+}
+
+.search-bar input {
+  border: none;
+  padding: 0 1rem;
+  outline: none;
+  flex: 1;
+  font-family: inherit;
+}
+
+.search-bar button {
+  background: var(--main-color);
+  color: #fff;
+  border: none;
+  padding: 0 1rem;
   cursor: pointer;
-  opacity: 0.8;
-  transform: scale(1.01);
-  transition: all 0.2s;
+  transition: background 0.3s ease;
 }
-.card-body {
-  height: 200px;
+
+.icon-btn {
+  font-size: 1.3rem;
+  color: #333;
+  text-decoration: none;
+  position: relative;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.card-produit {
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  margin-bottom: 20px;
+  height: 100%;
 }
 
-.card-body button {
-  margin-top: auto;
-  display: inline-block;
+.card-produit:hover {
+  transform: translateY(-5px);
+}
+
+.card-img {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .card-title {
-  font-size: 2em;
-  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--main-color);
+}
+
+.card-description {
+  font-size: 0.95rem;
+  color: #555;
+  flex-grow: 1;
+  margin-bottom: 16px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-price {
+  font-weight: bold;
+  color: var(--main-color);
+}
+
+.card-button {
+  background-color: transparent;
+  border: 1px solid var(--main-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: var(--main-color);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.card-button:hover {
+  background-color: var(--main-color);
+  color: #fff;
+}
+
+.produits-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.produits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.produit-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.detail-container {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.detail-title {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 700;
   text-align: center;
 }
 
-.img-fixed-size {
+.detail-content {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.detail-image {
+  flex: 1 1 300px;
+  max-width: 400px;
+}
+
+.detail-image img {
   width: 100%;
-  height: 400px;
-  object-fit: contain;
-  border-radius: 4px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.detail-info {
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-info h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.detail-info p {
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+.prix {
+  color: #2a9d8f;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.quantite-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  max-width: 120px;
+}
+
+.quantite-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.quantite-group input {
+  padding: 0.4rem 0.6rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.btn-ajouter {
+  background-color: var(--main-color);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: flex-start;
+  font-family: "Titillium Web", sans-serif;
+  transition: all 0.2s;
+}
+
+.btn-ajouter:hover {
+  background-color: var(--main-color);
+  transform: scale(1.01) translateY(-3px);
+  transition: all 0.2s;
+  font-family: "Titillium Web", sans-serif;
+}
+
+.success-message {
+  max-width: 600px;
+  margin-bottom: 10px;
+  padding: 1rem 1.5rem;
+  background-color: #e6f9f0;
+  color: #219d74;
+  border-left: 5px solid #2ecc71;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  font-size: 1rem;
+}
+
+.error-message {
+  max-width: 600px;
+  margin-bottom: 10px;
+  padding: 1rem 1.5rem;
+  background-color: #fdecea;
+  color: #d93025;
+  border-left: 5px solid #e63946;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  font-size: 1rem;
+}
+
+.ajout-produit-container {
+  max-width: 700px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #fdfdfd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.formulaire-produit {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+input,
+textarea {
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: "Titillium Web", sans-serif;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--main-color);
+}
+
+textarea {
+  resize: none;
+  min-height: 100px;
 }

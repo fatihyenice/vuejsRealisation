@@ -11,7 +11,7 @@
 
     <div v-else>
         <div class="container">
-            <div class="alert alert-danger text-center mt-5">
+            <div class="error-message" style="margin: 50px auto;">
                 Le produit est introuvable ou une erreur est survenue.
             </div>
         </div>

@@ -1,11 +1,28 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const session = require('express-session')
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',  
+    credentials: true
+}));
 app.use(express.json());
+
+app.use(session({
+    secret: 'dev_secret_1234567890',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false,       // HTTP local
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24, // 1 jour
+    }
+  }));
+  
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -22,7 +39,7 @@ connection.connect(err => {
     }
 });
 
-// Route ping pour vérifier que le backend répond
+ 
 app.get('/', (req, res) => {
     res.json({ message: 'Backend connecté et prêt !' });
 });
@@ -41,8 +58,8 @@ app.get('/produits', (req,res) => {
 app.post('/addProduits', (req, res) => {
     const { nom_produit, descriptif_produit, prix_produit, urlimage } = req.body;
 
-    if (!nom_produit || !prix_produit) {
-        return res.status(400).json({ message: 'Nom et prix requis' });
+    if (!nom_produit || !descriptif_produit || !prix_produit || !urlimage) {
+        return res.status(400).json({ message: 'Veuillez remplir les champs vides !' });
     }
 
     const sql = 'INSERT INTO produits (nom_produit, prix, description,  url) VALUES (?, ?, ?, ?)';
@@ -127,6 +144,61 @@ app.post('/login', (req, res) => {
     if(!email || !mdp){
         return res.status(400).json({message: "Veuillez remplir les champs vides !"})
     }
+
+    const sql = "SELECT * FROM users WHERE email = ?";
+    const emailPassed = [email];
+
+    connection.query(sql, emailPassed, (err, resultats) => {
+        if(resultats.length < 1){
+            return res.status(400).json({ message: "L'adresse mail est introuvable !" })
+        }
+
+        const mdpUserDb = resultats[0].password; 
+
+        bcrypt.compare(mdp, mdpUserDb, (err, result) => {
+            if (err) throw err;
+          
+            if (result) {
+                req.session.userId = resultats[0].id;
+                req.session.save((err) => {
+                    if (err) {
+                        console.error("Erreur session :", err);
+                        return res.status(500).json({ message: "Erreur de session" });
+                    }
+                
+                    return res.status(200).json({ message: "Connecté !", userId: req.session.userId });
+                }); 
+            } else {
+                return res.status(400).json({ message: "Mot de passe incorrect" })
+            }
+          });
+    })
+});
+
+app.get('/me', (req, res) => {
+    if (req.session.userId) {
+        res.json({ loggedIn: true, userId: req.session.userId });
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
+app.get('/checkSession', (req, res) => { 
+    if (req.session.userId) {
+        res.json({ loggedIn: true, userId: req.session.userId }); // 👈 AJOUT
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
+app.get('/logout', (req, res) => { 
+    if (req.session.userId) {
+        req.session.destroy(err => {
+            console.error("Erreur lors de la destruction de session :", err);
+        })
+        res.clearCookie('connect.sid'); 
+        res.json({ message: "Déconnecté avec succès" });
+    }  
 });
 
 app.listen(3000, () => {

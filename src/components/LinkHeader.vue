@@ -1,7 +1,8 @@
 <template>
-    <li class="nav-item"> 
-        <RouterLink class="nav-link active" aria-current="page"  :to="link">{{ label }}</RouterLink>
-    </li> 
+    <li class="nav-item">
+        <RouterLink class="nav-btn" aria-current="page" :to="link">{{ label }}
+        </RouterLink>
+    </li>
 </template>
 
 <script setup>
