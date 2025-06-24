@@ -2,7 +2,7 @@
     <div class="produits-container">
         <div class="produits-grid">
             <div v-for="(produit, index) in produits" :key="index">
-                <Router-link :to="`detail-produits/${produit.id}`" class="produit-link">
+                <Router-link :to="`detail-produits/${produit.id_produit}`" class="produit-link">
                     <Card :prix="produit.prix" :title="produit.nom_produit" :urlImage="produit.url"
                         :description="produit.description" />
                 </Router-link>

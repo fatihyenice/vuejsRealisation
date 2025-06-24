@@ -235,7 +235,7 @@ nav {
 
 .produits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 24px;
 }
 
@@ -455,4 +455,155 @@ textarea:focus {
 textarea {
   resize: none;
   min-height: 100px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 30px auto;
+}
+
+.box {
+  background: #fff;
+  padding: 10px;
+  border-radius: 3px;
+  box-shadow: 0 2px 3px 1px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  h1 {
+    color: var(--main-color);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: left;
+    border-bottom: 1px dashed var(--main-color);
+    margin-bottom: 80px;
+  }
+}
+
+.content-box {
+  background: transparent;
+  width: 100%;
+  padding: 10px;
+  h2 {
+    color: var(--main-color);
+    margin: 3px;
+    text-align: left;
+    border-bottom: 1px dashed var(--main-color);
+    padding-bottom: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: 1.3em;
+  }
+}
+
+.content-box:nth-child(2) {
+  border: 1px dashed var(--main-color);
+  align-self: stretch;
+  padding: inherit;
+  min-height: 50px;
+}
+
+.content-box:nth-child(3) {
+  position: relative;
+}
+
+.content-panier {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.produit {
+  padding: 10px;
+  border-radius: 3px;
+  border-left: 4px solid var(--main-color);
+  display: grid;
+  text-align: center;
+  align-items: center;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.produit:nth-child(even) {
+  background: #ecf0f1;
+}
+
+.content-box:nth-child(2) {
+  display: none;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  h4 {
+    font-weight: normal;
+    text-transform: uppercase;
+    color: var(--main-color);
+  }
+  span {
+    font-weight: 500;
+    font-size: 0.8em;
+    color: var(--dark-text);
+  }
+
+  select {
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    background: var(--main-color);
+    color: #fff;
+    font-family: "Titillium Web", sans-serif;
+    text-align: center;
+    &:hover {
+      cursor: pointer;
+      background: #ff6e61d8;
+    }
+  }
+
+  i {
+    font-size: 1.5em;
+    font-weight: normal;
+    padding: 10px;
+    &:hover {
+      cursor: pointer;
+      opacity: 0.7;
+      padding: 10px;
+    }
+  }
+}
+
+.prixTotal {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font-size: 1.7em;
+  border-top: 1px dashed var(--main-color);
+  text-align: right;
+  color: var(--dark-text);
+  width: 100%;
+}
+
+@media screen and (min-width: 760px) {
+  .content {
+    display: grid;
+    grid-template-columns: 2fr 1px 1fr;
+    h2 {
+      font-size: 1.8em;
+    }
+  }
+
+  h1 {
+    text-align: left;
+  }
+
+  .content-box:nth-child(2) {
+    display: block;
+  }
 }

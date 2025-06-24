@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/produits', (req,res) => {
-    connection.query('SELECT * FROM produits ORDER BY -id', (error, result) => {
+    connection.query('SELECT * FROM produits ORDER BY -id_produit', (error, result) => {
         if(error){
             console.error("Erreur de récupèration !")
             return;
@@ -122,7 +122,7 @@ app.post('/produitsDetail', (req, res) => {
 
     const { idProd } = req.body;
 
-    const sql = "SELECT * FROM produits WHERE id = ? LIMIT 1";
+    const sql = "SELECT * FROM produits WHERE id_produit = ? LIMIT 1";
     const donneespasser = [idProd];
 
     connection.query(sql, donneespasser, (err, result) => {
@@ -161,7 +161,7 @@ app.post('/login', (req, res) => {
             if (err) throw err;
           
             if (result) {
-                req.session.userId = resultats[0].id;
+                req.session.userId = resultats[0].id_users;
                 req.session.save((err) => {
                     if (err) {
                         console.error("Erreur session :", err);
@@ -178,7 +178,7 @@ app.post('/login', (req, res) => {
 
 app.get('/checkSession', (req, res) => {
     if (req.session.userId) {
-        const sql = "SELECT * FROM users WHERE id = ? LIMIT 1";
+        const sql = "SELECT * FROM users WHERE id_users = ? LIMIT 1";
         connection.query(sql, [req.session.userId], (err, result) => {
             if (err) {
                 console.error("Erreur lors de la récupération de l'utilisateur :", err);
@@ -192,7 +192,7 @@ app.get('/checkSession', (req, res) => {
             res.json({
                 email: result[0].email, 
                 loggedIn: true,
-                userId: result[0].id,
+                userId: result[0].id_users,
                 nom: result[0].nom,
                 prenom: result[0].prenom,
             });
@@ -211,6 +211,46 @@ app.get('/logout', (req, res) => {
         res.json({ message: "Déconnecté avec succès" });
     }  
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.post('/getPanier', (req,res) => {
+    const userId = req.body.userId
+
+    if(!userId){
+        return res.status(404).json({message: "Impossible de récuperer l'Id de l'utilisateur !"})
+    }
+
+    const sql = "SELECT * FROM panier WHERE id_users = ?";
+    const donnees = userId;
+
+    connection.query(sql,donnees, (err,result) => {
+        if(result.length == 0){
+            return res.status(200).json({message: "Votre panier est vide !"});
+        }
+
+        const sql2 = "SELECT * FROM panier p INNER JOIN produits prod ON p.id_produit = prod.id_produit WHERE p.id_users = ?";
+        const donnees2 = userId;
+
+        connection.query(sql2,donnees2, (err, resultat) => {
+            if(err){
+                return res.json(404).json({message: "Impossible de faire la jointure du panier vers les produits !"});
+            }
+            return res.status(200).json(resultat);
+        })
+    })
+})
 
 app.listen(3000, () => {
     console.log('Backend lancé sur http://localhost:3000');
