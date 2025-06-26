@@ -38,11 +38,11 @@ import { onMounted } from "vue";
 import { ref } from "vue";
 import ProduitPanier from "./ProduitPanier.vue";
 import { authStore } from "@/stores/auth";
-import axios from "axios";
 import { computed } from "vue";
-const auth = authStore();
+import { app } from "@/stores/axiosInstance";
 
-const myId = auth?.user?.userId;
+const auth = authStore();
+const myId = computed(() => auth?.user?.userId);
 const recupDonnees = ref(null);
 
 const totalPrix = computed(() => {
@@ -60,21 +60,15 @@ onMounted(async () => {
     recupPanier();
 });
 
-// FONCTION MET LE PANIER A JOUR
-const app = axios.create({
-    baseURL: "http://localhost:3000",
-    withCredentials: true
-});
-
 const recupPanier = async () => {
     try {
-        const req = await app.post("http://localhost:3000/getPanier", {
-            userId: myId
+        const req = await app.post("/getPanier", {
+            userId: myId.value
         })
 
         recupDonnees.value = req.data;
     } catch (e) {
-        console.log("Impossible d'envoyer la requête côté front-end !")
+        console.log("Impossible d'envoyer la requête côté front-end !" + e)
     }
 }
 </script>

@@ -36,9 +36,9 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import { ref } from "vue";
 import { authStore } from "@/stores/auth";
+import { app } from "@/stores/axiosInstance";
 
 const nom = ref('');
 const prenom = ref('');
@@ -59,7 +59,7 @@ const inscription = async () => {
     }
 
     try {
-        const axinscription = await axios.post('http://localhost:3000/register/', {
+        const axinscription = await app.post('/register', {
             email: email.value,
             nom: nom.value,
             prenom: prenom.value,

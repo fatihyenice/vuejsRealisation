@@ -1,15 +1,12 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+import axios from "axios"; 
+import { app } from "./axiosInstance";
 
 export const authStore = defineStore("auth", () => {
-  const isLogged = ref(false);
-  const user = ref(null);
 
-  const app = axios.create({
-    baseURL: "http://localhost:3000",
-    withCredentials: true,
-  });
+  const isLogged = ref(false);
+  const user = ref(null); 
 
   const checkSession = async () => {
     try {

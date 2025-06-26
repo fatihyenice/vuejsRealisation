@@ -47,6 +47,7 @@
 import { authStore } from "@/stores/auth";
 import axios from "axios";
 import { ref } from "vue";
+import { app } from "@/stores/axiosInstance";
 
 const nom_produit = ref('');
 const descriptif_produit = ref('');
@@ -61,7 +62,7 @@ const ajouterProduit = async () => {
     error.value = false;
     success.value = false;
     try {
-        const addProduct = await axios.post("http://localhost:3000/addProduits/", {
+        const addProduct = await app.post("/addProduits", {
             nom_produit: nom_produit.value,
             descriptif_produit: descriptif_produit.value,
             prix_produit: prix_produit.value,
@@ -77,5 +78,5 @@ const ajouterProduit = async () => {
             error.value = e.response.data.message;
         }
     }
-}
+} 
 </script>

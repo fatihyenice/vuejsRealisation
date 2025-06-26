@@ -32,21 +32,15 @@ const props = defineProps({
     name: String,
     url: String,
     prix: Number,
-    quantite: Number, // v-model:quantite va se lier à ça
+    quantite: Number,
 });
 
 const emit = defineEmits(['update:quantite']);
-
-// État local pour modifier la quantité
+ 
 const localQuantite = ref(props.quantite);
 
 // Synchronise le changement vers le parent via l'emit "update:quantite"
 watch(localQuantite, (newVal) => {
     emit('update:quantite', Number(newVal));
-});
-
-// Optionnel : resynchronise si la prop change depuis l’extérieur
-watch(() => props.quantite, (newVal) => {
-    localQuantite.value = newVal;
-});
+}); 
 </script>

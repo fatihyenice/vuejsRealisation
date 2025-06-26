@@ -212,19 +212,6 @@ app.get('/logout', (req, res) => {
     }  
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 app.post('/getPanier', (req,res) => {
     const userId = req.body.userId
 
@@ -251,6 +238,53 @@ app.post('/getPanier', (req,res) => {
         })
     })
 })
+
+app.post("/addProduitPanier", (req, res) => {
+    const { idProduit, myId, quantity } = req.body;
+
+    if (!idProduit || !myId || !quantity) {
+        return res.status(400).json({ status: "error", message: "Données manquantes (idProduit, myId, quantity)" });
+    }
+
+    if (quantity > 5) {
+        return res.status(200).json({ status: "error", message: "La quantité maximale par ajout est de 5." });
+    }
+
+    const sqlverif = "SELECT * FROM panier WHERE id_produit = ? AND id_users = ?";
+    const donneesAverif = [idProduit, myId];
+
+    connection.query(sqlverif, donneesAverif, (err, result) => {
+        if (err) {
+            return res.status(500).json({ status: "error", message: "Erreur lors de la vérification du panier", error: err });
+        }
+
+        if (result.length > 0) { 
+            let newQuantity = result[0].quantity + quantity;
+            if (newQuantity > 5){ 
+                newQuantity = 5;
+                return res.status(200).json({ status: "error", message: "Quantité maximum atteinte (5 produits) !", quantity: newQuantity });
+            }
+
+            const sqlUpdate = "UPDATE panier SET quantity = ? WHERE id_produit = ? AND id_users = ?";
+            connection.query(sqlUpdate, [newQuantity, idProduit, myId], (err, updateResult) => {
+                if (err) {
+                    return res.status(200).json({ status: "error", message: "Erreur lors de la mise à jour", error: err });
+                }
+                return res.status(200).json({ status: "success", message: "Quantité mise à jour", quantity: newQuantity });
+            });
+        } else { 
+            const qtyToInsert = quantity > 5 ? 5 : quantity;
+            const sqlInsert = "INSERT INTO panier (id_produit, id_users, quantity) VALUES (?, ?, ?)";
+            connection.query(sqlInsert, [idProduit, myId, qtyToInsert], (err, insertResult) => {
+                if (err) {
+                    return res.status(200).json({ status: "error", message: "Erreur lors de l'insertion", error: err });
+                }
+                return res.status(201).json({ status: "success", message: "Produit ajouté au panier", quantity: qtyToInsert });
+            });
+        }
+    });
+});
+
 
 app.listen(3000, () => {
     console.log('Backend lancé sur http://localhost:3000');

@@ -10,6 +10,9 @@
 
 defineProps({
     label: String,
-    link: String
+    link: {
+        type: String,
+        default: '/' // ou une autre valeur par défaut
+    }
 })
 </script>

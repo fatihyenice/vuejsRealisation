@@ -15,13 +15,14 @@
 import { onMounted, ref } from 'vue';
 import Card from './CardProduit.vue';
 import axios from 'axios';
+import { app } from '@/stores/axiosInstance';
 
 const message = ref('Connexion au back end');
 const produits = ref([]);
 
 const rechargeProduit = async () => {
     try {
-        const res2 = await axios.get('http://localhost:3000/produits');
+        const res2 = await app.get('/produits');
         produits.value = res2.data;
     } catch (err) {
         message.value = 'Erreur de connexion au backend'

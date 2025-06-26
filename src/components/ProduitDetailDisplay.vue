@@ -13,11 +13,13 @@
 
                 <div class="quantite-group">
                     <label for="quantite">Quantité</label>
-                    <input type="number" id="quantite" v-model.number="quantite" min="1" />
+                    <input type="number" id="quantite" @input="envoyerQuantite" v-model.number="quantite" min="1"
+                        max="5" />
                 </div>
 
-                <button class="btn-ajouter" v-if="auth.isLogged" @click="ajouterAuPanier">Ajouter au panier</button>
-                <RouterLink class="btn-noconnecte" to="/connexion" v-else @click="ajouterAuPanier">Me connecter
+                <button class="btn-ajouter" v-if="auth.isLogged" @click="$emit('ajouterAuPanier')">Ajouter au
+                    panier</button>
+                <RouterLink class="btn-noconnecte" :to="routeConnexion" v-else @click="ajouterAuPanier">Me connecter
                 </RouterLink>
             </div>
         </div>
@@ -30,10 +32,26 @@
 
 <script setup>
 import { authStore } from "@/stores/auth"
+import axios from "axios";
+import { computed, ref } from "vue";
 
 const auth = authStore();
+const routeConnexion = '/connexion'
+const quantite = ref(1);
+const quantiteFinal = computed(() => quantite.value);
 
 const props = defineProps({
     produit: Object
-})
+});
+
+const emits = defineEmits(["quantiteProd", "ajouterAuPanier"])
+
+const envoyerQuantite = () => {
+    if (quantite.value > 5) {
+        emits("quantiteProd", 5)
+        return quantite.value = 5;
+    }
+
+    emits("quantiteProd", quantiteFinal.value);
+} 
 </script>
