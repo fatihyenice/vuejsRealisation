@@ -36,6 +36,7 @@ import { useRoute } from 'vue-router';
 import ProduitDetailDisplay from './ProduitDetailDisplay.vue';
 import { app } from '@/stores/axiosInstance';
 import { authStore } from '@/stores/auth';
+import { panierStore } from '@/stores/panier';
 
 const route = useRoute();
 const auth = authStore();
@@ -46,6 +47,7 @@ const etat = ref('loading');
 const quantite = ref(1);
 const error = ref("");
 const success = ref("");
+const panier = panierStore();
 
 onMounted(async () => {
     try {
@@ -79,6 +81,7 @@ const addPanier = async () => {
                 error.value = req.data.message;
                 success.value = "";
             }
+            panier.countPanier();
         } catch (e) {
             console.error(e);
             error.value = "Impossible d'ajouter au panier. Veuillez réessayer.";

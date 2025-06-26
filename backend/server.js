@@ -250,6 +250,11 @@ app.post("/addProduitPanier", (req, res) => {
         return res.status(200).json({ status: "error", message: "La quantité maximale par ajout est de 5." });
     }
 
+    
+    if (quantity <= 0) {
+        return res.status(200).json({ status: "error", message: "La quantité ne peut pas être inférieur à 1 ou égale à 0." });
+    }
+
     const sqlverif = "SELECT * FROM panier WHERE id_produit = ? AND id_users = ?";
     const donneesAverif = [idProduit, myId];
 
@@ -282,6 +287,25 @@ app.post("/addProduitPanier", (req, res) => {
                 return res.status(201).json({ status: "success", message: "Produit ajouté au panier", quantity: qtyToInsert });
             });
         }
+    });
+});
+
+app.post("/getCountPanier", (req, res) => {
+    const monId = req.body.monId;
+
+    if (!monId) {
+        return res.status(400).json({ status: "error", message: "ID utilisateur manquant" });
+    }
+
+    const sql = "SELECT SUM(quantity) AS count FROM panier WHERE id_users = ?";
+
+    connection.query(sql, [monId], (err, result) => {
+        if (err) {
+            return res.status(500).json({ status: "error", message: "Erreur lors de la récupération du panier", error: err });
+        }
+
+        const count = result[0].count || 0;
+        return res.status(200).json({ count });
     });
 });
 

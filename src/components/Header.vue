@@ -21,6 +21,9 @@
             :label="`${auth.user.nom} ${auth.user.prenom}`" />
           <LinkHeader v-if="auth.isLogged" link="/panier" class="nav-btn">
             <i class="ri-shopping-cart-fill"></i>
+            <div class="countProduit">
+              <span>{{ count }} </span>
+            </div>
           </LinkHeader>
           <LinkHeader v-if="auth.isLogged" class="nav-btn" @click="deconnect" label="Déconnexion" />
 
@@ -31,16 +34,18 @@
 </template>
 
 <script setup>
-import LinkHeader from './LinkHeader.vue';
 import { authStore } from '@/stores/auth';
-import { computed } from 'vue';
+import LinkHeader from './LinkHeader.vue';
+import { panierStore } from '@/stores/panier';
+import { computed, onMounted, watch } from 'vue';
+import { storeToRefs } from 'pinia';
 
 const auth = authStore();
-
+const panier = panierStore();
 const isLogged = computed(() => auth.isLogged);
+const { count } = storeToRefs(panier);
 
 const deconnect = () => {
   auth.logout();
-}
-
+} 
 </script>

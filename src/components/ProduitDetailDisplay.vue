@@ -13,8 +13,8 @@
 
                 <div class="quantite-group">
                     <label for="quantite">Quantité</label>
-                    <input type="number" id="quantite" @input="envoyerQuantite" v-model.number="quantite" min="1"
-                        max="5" />
+                    <input type="number" id="quantite" @input="envoyerQuantite" @click="delValue"
+                        v-model.number="quantite" min="1" max="5" />
                 </div>
 
                 <button class="btn-ajouter" v-if="auth.isLogged" @click="$emit('ajouterAuPanier')">Ajouter au
@@ -53,5 +53,9 @@ const envoyerQuantite = () => {
     }
 
     emits("quantiteProd", quantiteFinal.value);
-} 
+}
+
+const delValue = () => {
+    quantite.value = 1
+}
 </script>
