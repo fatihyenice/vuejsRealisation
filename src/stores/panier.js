@@ -14,22 +14,57 @@ export const panierStore = defineStore('panier', () => {
         return;
       }
       try {
-        const req = await app.post('/getCountPanier', { monId: myId.value });
-        console.log('> API /getCountPanier:', req.data);
+        const req = await app.post('/getCountPanier', { monId: myId.value }); 
         count.value = req.data.count ?? 0;
       } catch (e) {
         console.error('Erreur /getCountPanier:', e);
       }
     };
+
+    const recupDonnees = ref(null);
+    const totalPrix = computed(() => {
+      if (!Array.isArray(recupDonnees.value)) return 0;
+    
+      return recupDonnees.value.reduce((acc, produit) => {
+        return acc + produit.prix * produit.quantity;
+      }, 0);
+    });
+
+    const recupPanier = async () => {
+      try {
+          const req = await app.post("/getPanier", {
+              userId: myId.value
+          })
+  
+          if (Array.isArray(req.data)) {
+            recupDonnees.value = req.data;
+          } else {
+              recupDonnees.value = [];
+          }
+      } catch (e) {
+          console.log("Impossible d'envoyer la requête côté front-end !" + e)
+      }
+    }
+
+    const supprimerProduit = async(idProduit) => {
+        try {
+          const requete = await app.post("/supprimerPanier", {
+            userId: myId.value,
+            idProduit: idProduit 
+          }) 
+          recupDonnees.value = recupDonnees.value.filter(p => p.id_produit !== idProduit);
+
+    // Mise à jour du compteur local
+    count.value = recupDonnees.value.reduce((acc, p) => acc + p.quantity, 0);
+        }catch(e) {
+          console.log("Impossible d'envoyer la requête côté front-end !")
+        }
+    }
    
     watch(myId, (newId) => {
       if (newId) countPanier();
-    }, { immediate: true });
+    }, { immediate: true }); 
   
-    watch(count, (newVal) => {
-      console.log('🛒 store.count changed:', newVal);
-    });
-  
-    return { count, countPanier };
+    return { count, countPanier, supprimerProduit, recupPanier, totalPrix, recupDonnees };
   });
   

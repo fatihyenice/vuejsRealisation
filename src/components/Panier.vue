@@ -6,7 +6,8 @@
                     <h1>Panier</h1>
 
                     <div class="content-panier">
-                        <ProduitPanier v-for="produit in recupDonnees" :key="produit.id" :url="produit.url"
+                        <ProduitPanier v-for="produit in panier.recupDonnees"
+                            @click="panier.supprimerProduit(produit.id_produit)" :key="produit.id" :url="produit.url"
                             :name="produit.nom_produit" v-model:quantite="produit.quantity" :prix="produit.prix" />
                     </div>
                 </div>
@@ -17,7 +18,7 @@
                     <h2>Récapitulatif</h2>
 
                     <div class="prixTotal">
-                        TOTAL: {{ totalPrix }}€
+                        TOTAL: {{ panier.totalPrix }}€
                     </div>
                 </div>
             </div>
@@ -35,40 +36,22 @@
 
 <script setup>
 import { onMounted } from "vue";
-import { ref } from "vue";
 import ProduitPanier from "./ProduitPanier.vue";
 import { authStore } from "@/stores/auth";
 import { computed } from "vue";
-import { app } from "@/stores/axiosInstance";
+import { panierStore } from "@/stores/panier";
+
 
 const auth = authStore();
+const panier = panierStore();
+
 const myId = computed(() => auth?.user?.userId);
-const recupDonnees = ref(null);
-
-const totalPrix = computed(() => {
-    if (!recupDonnees.value) return 0;
-
-    return recupDonnees.value.reduce((acc, produit) => {
-        return acc + produit.prix * produit.quantity
-    }, 0)
-});
 
 onMounted(async () => {
     if (!auth.isLogged) {
         return;
     }
-    recupPanier();
+    panier.totalPrix
+    panier.recupPanier();
 });
-
-const recupPanier = async () => {
-    try {
-        const req = await app.post("/getPanier", {
-            userId: myId.value
-        })
-
-        recupDonnees.value = req.data;
-    } catch (e) {
-        console.log("Impossible d'envoyer la requête côté front-end !" + e)
-    }
-}
 </script>

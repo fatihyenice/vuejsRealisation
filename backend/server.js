@@ -225,7 +225,7 @@ app.post('/getPanier', (req,res) => {
 
     connection.query(sql,donnees, (err,result) => {
         if(result.length == 0){
-            return res.status(200).json({message: "Votre panier est vide !"});
+            return res.status(200).json([]);
         }
 
         const sql2 = "SELECT * FROM panier p INNER JOIN produits prod ON p.id_produit = prod.id_produit WHERE p.id_users = ?";
@@ -310,6 +310,24 @@ app.post("/getCountPanier", (req, res) => {
     });
 });
 
+app.post("/supprimerPanier", (req, res) => {
+    const { userId, idProduit } = req.body
+
+    if(!userId || !idProduit){
+        return res.status(404).json({ message: "Impossible de récuperer l'id de l'utilisateur ou l'id produit ! "})
+    }
+
+    const requete = "DELETE FROM panier WHERE id_produit = ? AND id_users = ?";
+    const donnees = [idProduit,userId];
+
+    connection.query(requete,donnees, (err, resultat) => {
+        if(err){
+            return res.status(404).json({ message: "Une erreur s'est produite lors de la suppression !" })
+        }
+
+        return res.status(200).json({ message: "Le produit à bien été supprimé de votre panier !" });
+    })
+})
 
 app.listen(3000, () => {
     console.log('Backend lancé sur http://localhost:3000');

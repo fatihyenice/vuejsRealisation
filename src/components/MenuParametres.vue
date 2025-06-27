@@ -2,9 +2,8 @@
     <div class="menu-parametre-gauche">
         <ul>
             <router-link to="">
-                <li>ddd</li>
-            </router-link>
-            <li>ddd</li>
+                <li>Informations personnelles</li>
+            </router-link> 
         </ul>
     </div>
 </template>

@@ -753,8 +753,8 @@ textarea {
   height: 400px;
   border: 1px solid #dedede;
   margin-inline: 33px;
-  display: grid;
-  grid-template-columns: 1fr 3fr;
+  display: flex;
+  flex-direction: column;
 }
 
 .menu-parametre-gauche ul {
@@ -765,7 +765,7 @@ textarea {
 .menu-parametre-gauche ul li {
   list-style-type: none;
   background: #f7f8f9;
-  padding: 10px;
+  padding: 30px;
   border-bottom: 1px solid #dedede;
   border-bottom: 1px solid #dedede;
 }
@@ -773,6 +773,39 @@ textarea {
 .droite-boite-context {
   background: #f7f8f9;
   padding: 10px;
+}
+
+.droite-boite-context h3 {
+  margin: 20px;
+  font-weight: 600;
+  border-bottom: 1px dashed #dedede;
+  padding-bottom: 26px;
+  text-align: center;
+}
+
+.information-perso {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.information-perso div {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.information-perso label {
+  width: 50%;
+}
+
+.information-perso label input {
+  width: 100%;
+  color: rgb(58, 58, 58);
+}
+
+#informationbtn {
+  align-self: flex-end;
 }
 
 @media screen and (min-width: 760px) {
@@ -809,6 +842,11 @@ textarea {
 
   .boite {
     border-radius: 0 0 0 5px;
+  }
+
+  .bigBox {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
   }
 }
 

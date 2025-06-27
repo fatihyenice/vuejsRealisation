@@ -40,7 +40,23 @@
                     <MenuParametres />
 
                     <div class="droite-boite-context">
-                        ddd
+                        <h3>Modifier mes informations personnelles</h3>
+
+                        <form class="information-perso">
+                            <div>
+                                <label for="nom">Nom <input type="text" :value="auth.user.nom" id="nom"></label>
+                                <label for="prenom">Prénom <input type="text" :value="auth.user.prenom"
+                                        id="prenom"></label>
+                            </div>
+
+                            <div>
+                                <label for="nom">Adresse mail <input type="text" :value="auth.user.email"
+                                        id="nom"></label>
+                            </div>
+
+                            <button type="submit" id="informationbtn" class="btn-ajouter">Modifier mes
+                                informations</button>
+                        </form>
                     </div>
                 </div>
             </div>
