@@ -35,6 +35,14 @@
             </div>
             <div class="boite">
                 <h1>Mon profil</h1>
+
+                <div class="bigBox">
+                    <MenuParametres />
+
+                    <div class="droite-boite-context">
+                        ddd
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -42,9 +50,9 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import axios from 'axios';
 import { authStore } from '@/stores/auth';
 import MenuProfil from './MenuProfil.vue';
+import MenuParametres from './MenuParametres.vue';
 
 const adressemail = ref("");
 const mdp = ref("");

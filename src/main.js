@@ -9,9 +9,7 @@ import { authStore } from './stores/auth'
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
-  linkActiveClass: 'activedLink',
-  linkExactActiveClass: 'active',
+  routes, 
 })
 
 const pinia = createPinia();

@@ -4,8 +4,7 @@ import Register from "./components/Register.vue"
 import DetailProduit from "./components/DetailProduit.vue" 
 import Panier from "./components/Panier.vue"
 import Commandes from "./components/Commandes.vue" 
-import Profil from "./components/Profil.vue"
-import Parametres from "./components/Parametres.vue"
+import Profil from "./components/Profil.vue" 
 import Reclamations from "./components/Reclamations.vue" 
 import Supprimer from "./components/Supprimer.vue" 
 
@@ -16,8 +15,7 @@ export const routes = [
     { path: "/inscription", component: Register },
     { path: "/detail-produits/:id", component: DetailProduit}, 
     { path: "/panier", component: Panier }, 
-    { path: "/commandes", component: Commandes},
-    { path: "/parametres", component: Parametres},
+    { path: "/commandes", component: Commandes}, 
     { path: "/reclamations", component: Reclamations},
     { path: "/supprimer", component: Supprimer},
     { path: '/:pathMatch(.*)*', redirect: '/' }

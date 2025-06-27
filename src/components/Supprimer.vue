@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="boite">
-            Supprimer mon compte
+            <h1>Supprimer mon compte</h1>
         </div>
     </div>
 

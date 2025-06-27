@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="boite">
-            Reclamations
+            <h1>Mes réclamations</h1>
         </div>
     </div>
 
