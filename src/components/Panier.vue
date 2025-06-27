@@ -25,7 +25,7 @@
     </div>
 
     <div v-else>
-        <router-link to="/connexion">
+        <router-link to="/profil">
             <div class="error-message-full">
                 Vous devez être connecté pour pouvoir voir votre panier ! Cliquez ici pour vous connecter !
             </div>

@@ -1,18 +1,24 @@
 import Accueil from "./components/Accueil.vue" 
-import AddProduit from "./components/AddProduit.vue"
-import Login from "./components/Login.vue"
+import AddProduit from "./components/AddProduit.vue" 
 import Register from "./components/Register.vue"
-import DetailProduit from "./components/DetailProduit.vue"
-import Profil from "./components/Profil.vue"
+import DetailProduit from "./components/DetailProduit.vue" 
 import Panier from "./components/Panier.vue"
+import Commandes from "./components/Commandes.vue" 
+import Profil from "./components/Profil.vue"
+import Parametres from "./components/Parametres.vue"
+import Reclamations from "./components/Reclamations.vue" 
+import Supprimer from "./components/Supprimer.vue" 
 
 export const routes = [
     { path: "/", component: Accueil }, 
     { path: "/add", component: AddProduit },
-    { path: "/connexion", component: Login },
+    { path: "/profil", component: Profil },
     { path: "/inscription", component: Register },
-    { path: "/detail-produits/:id", component: DetailProduit},
-    { path: "/me", component: Profil},
+    { path: "/detail-produits/:id", component: DetailProduit}, 
     { path: "/panier", component: Panier }, 
+    { path: "/commandes", component: Commandes},
+    { path: "/parametres", component: Parametres},
+    { path: "/reclamations", component: Reclamations},
+    { path: "/supprimer", component: Supprimer},
     { path: '/:pathMatch(.*)*', redirect: '/' }
 ]

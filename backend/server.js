@@ -103,8 +103,8 @@ app.post('/register', (req, res) => {
                 return res.status(500).json({ message: "Erreur lors du hashage du mot de passe" });
             }
 
-            const sql = "INSERT INTO users(nom,prenom, email, password) VALUES (?,?,?,?)";
-            const donnees = [nom,prenom,email, hash];  
+            const sql = "INSERT INTO users(nom,prenom, email, password, role) VALUES (?,?,?,?,?)";
+            const donnees = [nom,prenom,email, hash, "utilisateur"];  
 
             connection.query(sql, donnees, (err, resultats) => {
                 if (err) {
@@ -195,6 +195,7 @@ app.get('/checkSession', (req, res) => {
                 userId: result[0].id_users,
                 nom: result[0].nom,
                 prenom: result[0].prenom,
+                role: result[0].role,
             });
         });
     } else {

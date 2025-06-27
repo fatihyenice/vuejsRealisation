@@ -1,41 +1,51 @@
 <template>
     <div class="ajout-produit-container" v-if="auth.isLogged">
-        <div class="error-message" v-if="error" role="alert">
-            {{ error }}
+        <div v-if="auth.user.role == 'admin'">
+            <div class="error-message" v-if="error" role="alert">
+                {{ error }}
+            </div>
+
+            <div class="success-message" v-if="success" role="alert">
+                {{ success }}
+            </div>
+            <h1 class="form-title">Ajouter un produit</h1>
+
+            <form @submit.prevent="ajouterProduit" class="formulaire-produit">
+                <div class="form-group">
+                    <label for="nom">Nom du produit</label>
+                    <input type="text" v-model="nom_produit" id="nom" placeholder="Entrez le nom du produit" />
+                </div>
+
+                <div class="form-group">
+                    <label for="descriptif">Descriptif du produit</label>
+                    <textarea id="descriptif" v-model="descriptif_produit"
+                        placeholder="Description du produit"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prix">Prix du produit (€)</label>
+                    <input type="number" v-model.number="prix_produit" id="prix" min="5" />
+                </div>
+
+                <div class="form-group">
+                    <label for="urlimg">URL image du produit</label>
+                    <input type="text" v-model="urlimage" id="urlimg" placeholder="https://..." />
+                </div>
+
+                <button type="submit" class="btn-ajouter">Ajouter le produit</button>
+            </form>
         </div>
-
-        <div class="success-message" v-if="success" role="alert">
-            {{ success }}
+        <div v-else>
+            <router-link to="/profil">
+                <div class="error-message-full">
+                    Vous n'avez pas les autorisations nécessaires pour pouvoir ajouter un produit !
+                </div>
+            </router-link>
         </div>
-        <h1 class="form-title">Ajouter un produit</h1>
-
-        <form @submit.prevent="ajouterProduit" class="formulaire-produit">
-            <div class="form-group">
-                <label for="nom">Nom du produit</label>
-                <input type="text" v-model="nom_produit" id="nom" placeholder="Entrez le nom du produit" />
-            </div>
-
-            <div class="form-group">
-                <label for="descriptif">Descriptif du produit</label>
-                <textarea id="descriptif" v-model="descriptif_produit" placeholder="Description du produit"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="prix">Prix du produit (€)</label>
-                <input type="number" v-model.number="prix_produit" id="prix" min="5" />
-            </div>
-
-            <div class="form-group">
-                <label for="urlimg">URL image du produit</label>
-                <input type="text" v-model="urlimage" id="urlimg" placeholder="https://..." />
-            </div>
-
-            <button type="submit" class="btn-ajouter">Ajouter le produit</button>
-        </form>
     </div>
 
     <div v-else>
-        <router-link to="/connexion">
+        <router-link to="/profil">
             <div class="error-message-full">
                 Vous devez être connecté pour pouvoir ajouter des produits ! Cliquez ici pour vous connecter !
             </div>

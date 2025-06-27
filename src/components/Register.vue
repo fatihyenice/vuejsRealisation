@@ -33,6 +33,14 @@
             <button type="submit" class="btn-ajouter">S'inscrire</button>
         </form>
     </div>
+
+    <div v-else>
+        <router-link to="/profil">
+            <div class="error-message-full">
+                Vous devez êtes déjà connecté, déconnectez-vous pour vous inscrire !
+            </div>
+        </router-link>
+    </div>
 </template>
 
 <script setup>
