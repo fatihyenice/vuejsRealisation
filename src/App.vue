@@ -13,13 +13,11 @@ const panier = panierStore();
 const route = useRoute();
 
 onMounted(() => {
-  panier.countPanier(); // au chargement initial
+  panier.countPanier();
 });
 
-watch(
-  () => route.fullPath,   // on observe les changements d'URL (donc les changements de page)
-  () => {
-    panier.countPanier(); // on recharge à chaque changement de page
-  }
+watch(() => route.fullPath, () => {
+  panier.countPanier();
+}
 );
 </script>

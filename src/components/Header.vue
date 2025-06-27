@@ -29,6 +29,36 @@
 
         </nav>
       </div>
+
+      <div class="iconBurger" @click="openModal">
+        <i class="ri-menu-line"></i>
+      </div>
+
+      <div class="menuBurger" v-if="modal">
+        <div class="closeModal" @click="openModal">
+          <i class="ri-close-circle-line"></i>
+        </div>
+
+        <div class="menu">
+          <ul>
+            <LinkHeader link="/" @click="openModal" label="Accueil" />
+            <LinkHeader v-if="auth.isLogged" @click="openModal" link="/add" label="Ajouter un produit" />
+            <LinkHeader v-if="!auth.isLogged" @click="openModal" link="/connexion" label="Connexion" />
+            <LinkHeader v-if="!auth.isLogged" @click="openModal" link="/inscription" label="Inscription" />
+            <LinkHeader v-if="auth.isLogged" @click="openModal" link="/connexion"
+              :label="`${auth.user.nom} ${auth.user.prenom}`" />
+            <LinkHeader v-if="auth.isLogged" @click="openModal" link="/panier">
+              <i class="ri-shopping-cart-fill"></i>
+              <div class="countProduit">
+                <span>{{ count }} </span>
+              </div>
+            </LinkHeader>
+            <LinkHeader v-if="auth.isLogged" @click="deconnect" label="Déconnexion" />
+          </ul>
+        </div>
+
+      </div>
+
     </div>
   </header>
 </template>
@@ -37,7 +67,7 @@
 import { authStore } from '@/stores/auth';
 import LinkHeader from './LinkHeader.vue';
 import { panierStore } from '@/stores/panier';
-import { computed, onMounted, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
 const auth = authStore();
@@ -45,7 +75,14 @@ const panier = panierStore();
 const isLogged = computed(() => auth.isLogged);
 const { count } = storeToRefs(panier);
 
+const modal = ref(false);
+
 const deconnect = () => {
   auth.logout();
-} 
+  modal.value = !modal.value
+}
+
+const openModal = () => {
+  modal.value = !modal.value
+}
 </script>
