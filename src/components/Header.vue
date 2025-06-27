@@ -79,7 +79,10 @@ const modal = ref(false);
 
 const deconnect = () => {
   auth.logout();
-  modal.value = !modal.value
+
+  if (modal.value) {
+    modal.value = !modal.value
+  }
 }
 
 const openModal = () => {
