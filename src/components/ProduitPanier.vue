@@ -19,7 +19,7 @@
         <div class="detail">
             <h4>Action</h4>
             <span>
-                <i class="ri-delete-bin-line"></i>
+                <i class="ri-delete-bin-line" @click="sendId"></i>
             </span>
         </div>
     </div>
@@ -33,13 +33,17 @@ const props = defineProps({
     url: String,
     prix: Number,
     quantite: Number,
+    idProduit: Number,
 });
 
-const emit = defineEmits(['update:quantite']);
- 
+const emit = defineEmits(['update:quantite'], ["supprimer"]);
+
 const localQuantite = ref(props.quantite);
 
-// Synchronise le changement vers le parent via l'emit "update:quantite"
+const sendId = () => {
+    emit("supprimer", props.idProduit);
+}
+
 watch(localQuantite, (newVal) => {
     emit('update:quantite', Number(newVal));
 }); 

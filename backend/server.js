@@ -57,7 +57,7 @@ app.get('/produits', (req,res) => {
     })
 }) 
 
-app.post('/addProduits', (req, res) => {
+app.post('/addProduits', checkSession, (req, res) => {
     const { nom_produit, descriptif_produit, prix_produit, urlimage } = req.body;
 
     if (!nom_produit || !descriptif_produit || !prix_produit || !urlimage) {
@@ -203,17 +203,25 @@ app.get('/checkSession', (req, res) => {
     }
 });
 
+function checkSession(req,res,next){
+    if(req.session && req.session.userId){
+        next();
+    }else{
+        res.status(401).json({ message: "Vous n'êtes pas connecté, veuillez vous connecter !"})
+    }
+}
+
 app.get('/logout', (req, res) => { 
     if (req.session.userId) {
         req.session.destroy(err => {
             console.error("Erreur lors de la destruction de session :", err);
         })
         res.clearCookie('connect.sid'); 
-        res.json({ message: "Déconnecté avec succès" });
+    res.json({ message: "Déconnecté avec succès" });
     }  
 });
 
-app.post('/getPanier', (req,res) => {
+app.post('/getPanier', checkSession, (req,res) => {
     const userId = req.body.userId
 
     if(!userId){
@@ -240,7 +248,7 @@ app.post('/getPanier', (req,res) => {
     })
 })
 
-app.post("/addProduitPanier", (req, res) => {
+app.post("/addProduitPanier", checkSession, (req, res) => {
     const { idProduit, myId, quantity } = req.body;
 
     if (!idProduit || !myId || !quantity) {
@@ -291,7 +299,7 @@ app.post("/addProduitPanier", (req, res) => {
     });
 });
 
-app.post("/getCountPanier", (req, res) => {
+app.post("/getCountPanier", checkSession, (req, res) => {
     const monId = req.body.monId;
 
     if (!monId) {
@@ -310,7 +318,7 @@ app.post("/getCountPanier", (req, res) => {
     });
 });
 
-app.post("/supprimerPanier", (req, res) => {
+app.post("/supprimerPanier", checkSession, (req, res) => {
     const { userId, idProduit } = req.body
 
     if(!userId || !idProduit){
@@ -327,7 +335,38 @@ app.post("/supprimerPanier", (req, res) => {
 
         return res.status(200).json({ message: "Le produit à bien été supprimé de votre panier !" });
     })
-})
+});
+
+app.post("/updateProfil", checkSession, (req, res) => { 
+    const { nom, prenom, email } = req.body;
+    const userId = req.session.userId;  
+     
+    if (!nom || !prenom || !email) {
+      return res.status(400).json({ message: "Tous les champs sont obligatoires" });
+    }
+     
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Adresse email invalide" });
+    }
+   
+    const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,}$/;
+    if (!nameRegex.test(nom) || !nameRegex.test(prenom)) {
+      return res.status(400).json({ message: "Nom ou prénom invalide" });
+    }
+   
+    const sql = "UPDATE users SET nom = ?, prenom = ?, email = ? WHERE id_users = ?";
+    const values = [nom, prenom, email, userId];
+  
+    connection.query(sql, values, (err, result) => {
+      if (err) {
+        console.error("Erreur mise à jour profil :", err);
+        return res.status(500).json({ message: "Erreur serveur" });
+      }
+       
+      res.status(200).json({ message: "Profil mis à jour avec succès" });
+    });
+  });
 
 app.listen(3000, () => {
     console.log('Backend lancé sur http://localhost:3000');

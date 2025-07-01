@@ -36,7 +36,7 @@ import axios from "axios";
 import { computed, ref } from "vue";
 
 const auth = authStore();
-const routeConnexion = '/connexion'
+const routeConnexion = '/profil'
 const quantite = ref(1);
 const quantiteFinal = computed(() => quantite.value);
 

@@ -52,7 +52,7 @@ export const authStore = defineStore("auth", () => {
     } catch (e) { 
       return { success: false, error: e.response?.data?.message || 'Erreur inconnue' };
     }
-  }; 
-
+  };  
+  
   return { checkSession, connect, logout, login, isLogged, user };
 });

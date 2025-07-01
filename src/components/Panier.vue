@@ -6,9 +6,10 @@
                     <h1>Panier</h1>
 
                     <div class="content-panier">
-                        <ProduitPanier v-for="produit in panier.recupDonnees"
-                            @click="panier.supprimerProduit(produit.id_produit)" :key="produit.id" :url="produit.url"
-                            :name="produit.nom_produit" v-model:quantite="produit.quantity" :prix="produit.prix" />
+                        <ProduitPanier @supprimer="panier.supprimerProduit(produit.id_produit)"
+                            v-for="produit in panier.recupDonnees" :idProduit="produit.id_produit" :key="produit.id"
+                            :url="produit.url" :name="produit.nom_produit" v-model:quantite="produit.quantity"
+                            :prix="produit.prix" />
                     </div>
                 </div>
                 <div class="content-box">
@@ -53,5 +54,5 @@ onMounted(async () => {
     }
     panier.totalPrix
     panier.recupPanier();
-});
+}); 
 </script>
