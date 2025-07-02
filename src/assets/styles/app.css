@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
   --main-color: #ff6f61;
@@ -330,11 +331,11 @@ nav {
   color: white;
   font-weight: 600;
   border-radius: 8px;
+  margin-top: 10px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  align-self: flex-start;
   font-family: "Titillium Web", sans-serif;
   transition: all 0.2s;
+  float: right;
 }
 
 .btn-ajouter:hover {
@@ -406,7 +407,7 @@ nav {
 .ajout-produit-container {
   max-width: 700px;
   margin: 3rem auto;
-  padding: 2rem;
+  padding: 2rem 2rem 70px 2rem;
   background-color: #fdfdfd;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -496,10 +497,11 @@ textarea {
   margin: 3px;
   text-align: left;
   border-bottom: 1px dashed var(--main-color);
-  padding-bottom: 2px;
+  padding-bottom: 30px;
   text-transform: uppercase;
   font-weight: 500;
   font-size: 1.3em;
+  width: 0%;
 }
 
 .content-box:nth-child(2) {
@@ -586,13 +588,12 @@ textarea {
 
 .prixTotal {
   position: absolute;
-  right: 0;
+  left: 0;
   bottom: 0;
   font-size: 1.7em;
   border-top: 1px dashed var(--main-color);
   text-align: right;
   color: var(--dark-text);
-  width: 100%;
 }
 
 .countProduit {
@@ -805,10 +806,94 @@ textarea {
   align-self: flex-end;
 }
 
+.big-container {
+  background: #fff;
+  border: 0.5px solid #dedede;
+  margin-inline: 33px;
+  display: flex;
+  flex-direction: column;
+}
+
+.container-list-commandes {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.container-commandes {
+  width: 100%;
+  padding: 10px;
+  background: #f7f8f9;
+}
+
+.list-commandes {
+  background: #fff;
+  border-bottom: 1px solid #dedede;
+  padding: 10px;
+  padding: 30px;
+  border-right: 1px solid #dedede;
+}
+
+.list-commandes:hover {
+  background: #f7f8f9;
+  cursor: pointer;
+}
+
+.list-commandes.active {
+  border-right: 1px solid transparent;
+  background: #f7f8f9;
+}
+
+.list-commandes:last-child {
+  border-bottom: 1px solid transparent;
+}
+
+.list-commandes h2 {
+  font-weight: 400;
+  font-size: 1em;
+  font-family: "Roboto", sans-serif;
+}
+
+.list-commandes span {
+  display: flex;
+  gap: 10px;
+  font-family: "Roboto", sans-serif;
+}
+
+.prix-list {
+  font-weight: bold;
+}
+
+.boutton-confirmer-panier {
+  background: var(--main-color);
+  padding: 10px;
+  color: #fff;
+  text-align: center;
+  font-size: 0.9em;
+  text-transform: uppercase;
+  border-radius: 5px;
+  letter-spacing: 1px;
+  box-shadow: 0 1px 0 0.5px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  font-weight: 400;
+  bottom: 0;
+  right: 0;
+}
+
+.boutton-confirmer-panier:hover {
+  text-shadow: 0px 0px 5px #fff;
+  cursor: pointer;
+}
+
 @media screen and (min-width: 760px) {
   .content {
     display: grid;
     grid-template-columns: 2fr 1px 1fr;
+  }
+
+  .big-container {
+    display: grid;
+    grid-template-columns: 1.5fr 3fr;
   }
 
   .content h2 {
@@ -847,11 +932,26 @@ textarea {
   }
 }
 
+@media screen and (min-width: 760px) {
+  .prixTotal {
+    font-size: 1em;
+  }
+}
+
 @media screen and (min-width: 980px) {
   .header-right {
     display: flex;
     align-items: center;
     gap: 1rem;
+  }
+
+  .big-container {
+    display: grid;
+    grid-template-columns: 1.5fr 3fr;
+  }
+
+  .prixTotal {
+    font-size: 1.3em;
   }
 
   .iconBurger {
@@ -873,5 +973,11 @@ textarea {
   }
   .nav-btn {
     position: relative;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .prixTotal {
+    font-size: 1.6em;
   }
 }

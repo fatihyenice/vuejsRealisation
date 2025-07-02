@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
-const session = require('express-session')
+const session = require('express-session') 
 
 const app = express();
 
@@ -248,7 +248,7 @@ app.post('/getPanier', checkSession, (req,res) => {
     })
 })
 
-app.post("/addProduitPanier", checkSession, (req, res) => {
+app.post("/addProduitPanier", checkSession, (req, res) => { 
     const { idProduit, myId, quantity } = req.body;
 
     if (!idProduit || !myId || !quantity) {
@@ -286,16 +286,20 @@ app.post("/addProduitPanier", checkSession, (req, res) => {
                 }
                 return res.status(200).json({ status: "success", message: "Quantité mise à jour", quantity: newQuantity });
             });
-        } else { 
-            const qtyToInsert = quantity > 5 ? 5 : quantity;
-            const sqlInsert = "INSERT INTO panier (id_produit, id_users, quantity) VALUES (?, ?, ?)";
-            connection.query(sqlInsert, [idProduit, myId, qtyToInsert], (err, insertResult) => {
-                if (err) {
-                    return res.status(200).json({ status: "error", message: "Erreur lors de l'insertion", error: err });
-                }
-                return res.status(201).json({ status: "success", message: "Produit ajouté au panier", quantity: qtyToInsert });
-            });
-        }
+        }else { 
+                const qtyToInsert = quantity > 5 ? 5 : quantity;
+                const { v4: uuidv4 } = require('uuid');
+                const uuid = uuidv4();  
+            
+                const sqlInsert = "INSERT INTO panier (quantity, commande_valider, numerocommande, id_produit, id_users) VALUES (?,?,?,?,?)";
+                connection.query(sqlInsert, [qtyToInsert, 1, uuid, idProduit, myId], (err, insertResult) => {
+                    if (err) {
+                        return res.status(200).json({ status: "error", message: "Erreur lors de l'insertion", error: err });
+                    }
+                    return res.status(201).json({ status: "success", message: "Produit ajouté au panier", quantity: qtyToInsert });
+                });
+            }
+            
     });
 });
 

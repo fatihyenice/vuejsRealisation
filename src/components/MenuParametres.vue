@@ -3,12 +3,7 @@
         <ul>
             <router-link to="">
                 <li>Informations personnelles</li>
-            </router-link> 
+            </router-link>
         </ul>
     </div>
 </template>
-
-<script setup>
-
-
-</script>

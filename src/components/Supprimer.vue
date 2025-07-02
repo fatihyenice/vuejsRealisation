@@ -8,12 +8,12 @@
             </div>
         </div>
         <div class="boite">
-            <h1>Supprimer mon compte</h1>
+            <h1><i class="ri-delete-bin-line"></i> Supprimer mon compte</h1>
         </div>
     </div>
 
     <div v-else>
-        <router-link to="/profil">
+        <router-link to=" /profil">
             <div class="error-message-full">
                 Vous devez être connecté pour pouvoir accéder à cette page ! Cliquez ici pour vous connecter !
             </div>

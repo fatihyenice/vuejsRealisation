@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="boite">
-                <h1>Mon profil</h1>
+                <h1><i class="ri-profile-line"></i> Mon profil</h1>
 
                 <div class="bigBox">
                     <MenuParametres />
@@ -90,15 +90,6 @@ const nom = ref(auth.user.nom);
 const prenom = ref(auth.user.prenom);
 const mail = ref(auth.user.email);
 
-watch(() => auth.isLogged, (isLogged) => {
-    if (!isLogged) {
-        adressemail.value = "";
-        mdp.value = "";
-        success.value = false;
-        error.value = false;
-    }
-});
-
 const handleConnect = async () => {
     const result = await auth.connect(adressemail.value, mdp.value);
     if (result.success) {
@@ -107,6 +98,12 @@ const handleConnect = async () => {
         error.value = result.error;
     }
 };
+
+watch(() => auth.user, (newUser) => {
+    nom.value = newUser.nom;
+    prenom.value = newUser.prenom;
+    mail.value = newUser.email;
+});
 
 const changeInfo = async () => {
     try {

@@ -21,6 +21,10 @@
                     <div class="prixTotal">
                         TOTAL: {{ panier.totalPrix }}€
                     </div>
+
+                    <div class="boutton-confirmer-panier">
+                        Étape suivante
+                    </div>
                 </div>
             </div>
         </div>

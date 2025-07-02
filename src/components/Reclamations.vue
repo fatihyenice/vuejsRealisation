@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="boite">
-            <h1>Mes réclamations</h1>
+            <h1><i class="ri-shake-hands-line"></i> Mes réclamations</h1>
         </div>
     </div>
 
