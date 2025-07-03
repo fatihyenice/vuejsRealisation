@@ -3,6 +3,7 @@ const cors = require('cors');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const session = require('express-session') 
+const dayjs = require('dayjs')
 
 const app = express();
 
@@ -141,40 +142,78 @@ app.post('/produitsDetail', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-    const { email, mdp } = req.body
+    const { email, mdp } = req.body;
     
     if(!email || !mdp){
-        return res.status(400).json({message: "Veuillez remplir les champs vides !"})
+        return res.status(400).json({message: "Veuillez remplir les champs vides !"});
     }
 
     const sql = "SELECT * FROM users WHERE email = ?";
     const emailPassed = [email];
 
     connection.query(sql, emailPassed, (err, resultats) => {
+        if(err) {
+            return res.status(500).json({ message: "Erreur serveur" });
+        }
         if(resultats.length < 1){
-            return res.status(400).json({ message: "L'adresse mail est introuvable !" })
+            return res.status(400).json({ message: "L'adresse mail est introuvable !" });
         }
 
         const mdpUserDb = resultats[0].password; 
 
         bcrypt.compare(mdp, mdpUserDb, (err, result) => {
-            if (err) throw err;
-          
-            if (result) {
-                req.session.userId = resultats[0].id_users;
-                req.session.save((err) => {
-                    if (err) {
-                        console.error("Erreur session :", err);
-                        return res.status(500).json({ message: "Erreur de session" });
-                    } 
-                    return res.status(200).json({ message: "Connecté !"});
-                }); 
-            } else {
-                return res.status(400).json({ message: "Mot de passe incorrect" })
+            if(err) {
+                return res.status(500).json({ message: "Erreur serveur lors de la vérification du mot de passe" });
             }
-          });
-    })
-}); 
+            if (!result) {
+                return res.status(400).json({ message: "Mot de passe incorrect" });
+            }
+ 
+            req.session.userId = resultats[0].id_users;
+
+            req.session.save((err) => {
+                if (err) {
+                    console.error("Erreur session :", err);
+                    return res.status(500).json({ message: "Erreur de session" });
+                }
+
+                const reqPanierSession = "SELECT * FROM panier WHERE id_users = ?";
+                connection.query(reqPanierSession, [req.session.userId], (erreur, resultat) => {
+                    if (erreur) {
+                        return res.status(500).json({ message: "Impossible d'exécuter la requête panier !" });
+                    }
+
+                    if(resultat.length === 0) { 
+                        return res.status(200).json({ message: "Connecté ! Aucun panier trouvé." });
+                    }
+ 
+                    const nowDate = dayjs().format("DD/MM/YYYY");
+                    const datesASupprimer = resultat
+                        .filter(p => dayjs(p.dateheure).format("DD/MM/YYYY") !== nowDate)
+                        .map(p => dayjs(p.dateheure).format("YYYY-MM-DD"));
+
+                    if (datesASupprimer.length === 0) {
+                        return res.status(200).json({ message: "Connecté ! Aucun panier ancien à supprimer." });
+                    } 
+                    const reqDelete = "DELETE FROM panier WHERE id_users = ? AND dateheure IN (?)";
+                    connection.query(reqDelete, [req.session.userId, datesASupprimer], (erreurDel, resultatDel) => {
+                        if (erreurDel) {
+                            return res.status(500).json({ message: "Impossible de supprimer les anciennes commandes !" });
+                        }
+ 
+                        req.session.OrderCommand = resultat[0].numerocommande;
+                        req.session.save(err => {
+                            if(err){
+                                return res.status(500).json({message: "Impossible de créer la session numéro de commande !"});
+                            }
+                            return res.status(200).json({ message: "Connecté ! Anciennes commandes supprimées." });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
 
 app.get('/checkSession', (req, res) => {
     if (req.session.userId) {
@@ -209,7 +248,7 @@ function checkSession(req,res,next){
     }else{
         res.status(401).json({ message: "Vous n'êtes pas connecté, veuillez vous connecter !"})
     }
-}
+} 
 
 app.get('/logout', (req, res) => { 
     if (req.session.userId) {
@@ -217,7 +256,7 @@ app.get('/logout', (req, res) => {
             console.error("Erreur lors de la destruction de session :", err);
         })
         res.clearCookie('connect.sid'); 
-    res.json({ message: "Déconnecté avec succès" });
+        res.json({ message: "Déconnecté avec succès" }); 
     }  
 });
 
@@ -259,67 +298,58 @@ app.post("/addProduitPanier", checkSession, (req, res) => {
         return res.status(200).json({ status: "error", message: "La quantité maximale par ajout est de 5." });
     }
 
-    
     if (quantity <= 0) {
-        return res.status(200).json({ status: "error", message: "La quantité ne peut pas être inférieur à 1 ou égale à 0." });
+        return res.status(200).json({ status: "error", message: "La quantité ne peut pas être inférieure à 1 ou égale à 0." });
     }
-
+ 
     const sqlverif = "SELECT * FROM panier WHERE id_produit = ? AND id_users = ?";
-    const donneesAverif = [idProduit, myId];
-
-    connection.query(sqlverif, donneesAverif, (err, result) => {
+    connection.query(sqlverif, [idProduit, myId], (err, result) => {
         if (err) {
             return res.status(500).json({ status: "error", message: "Erreur lors de la vérification du panier", error: err });
         }
 
-        if (result.length > 0) { 
+        if (result.length > 0) {
+            // Produit déjà présent : on met à jour la quantité
             let newQuantity = result[0].quantity + quantity;
-            if (newQuantity > 5){ 
+            if (newQuantity > 5) {
                 newQuantity = 5;
                 return res.status(200).json({ status: "error", message: "Quantité maximum atteinte (5 produits) !", quantity: newQuantity });
             }
 
             const sqlUpdate = "UPDATE panier SET quantity = ? WHERE id_produit = ? AND id_users = ?";
-            connection.query(sqlUpdate, [newQuantity, idProduit, myId], (err, updateResult) => {
+            connection.query(sqlUpdate, [newQuantity, idProduit, myId], (err) => {
                 if (err) {
-                    return res.status(200).json({ status: "error", message: "Erreur lors de la mise à jour", error: err });
+                    return res.status(500).json({ status: "error", message: "Erreur lors de la mise à jour", error: err });
                 }
                 return res.status(200).json({ status: "success", message: "Quantité mise à jour", quantity: newQuantity });
             });
-        }else { 
+        } else {
+            // Produit non présent : on doit vérifier s'il existe une commande active aujourd'hui pour l'utilisateur
+            const sqlGetOrder = "SELECT numerocommande FROM panier WHERE id_users = ? AND commande_valider = 1 AND DATE(dateheure) = CURDATE() LIMIT 1";
+            connection.query(sqlGetOrder, [myId], (err, orderResult) => {
+                if (err) {
+                    return res.status(500).json({ status: "error", message: "Erreur lors de la récupération de la commande active", error: err });
+                }
+
+                let numerocommande;
+                if (orderResult.length > 0) {
+                    numerocommande = orderResult[0].numerocommande;
+                } else {
+                    const { v4: uuidv4 } = require('uuid');
+                    numerocommande = uuidv4();
+                }
+
                 const qtyToInsert = quantity > 5 ? 5 : quantity;
-                const { v4: uuidv4 } = require('uuid');
-                const uuid = uuidv4();   
-          
+                const sqlInsert = "INSERT INTO panier (quantity, dateheure, commande_valider, numerocommande, id_produit, id_users) VALUES (?, ?, 1, ?, ?, ?)";
+
+                connection.query(sqlInsert, [qtyToInsert, new Date(), numerocommande, idProduit, myId], (err) => {
                     if (err) {
-                        return res.status(200).json({ status: "error", message: "Erreur lors de l'insertion", error: err });
+                        return res.status(500).json({ status: "error", message: "Erreur lors de l'insertion du produit dans le panier", error: err });
                     }
-                  
-                    if (!req.session.OrderCommand) { 
-                        req.session.OrderCommand = uuid;
-                        req.session.save((err) => {
-                            if (err) {
-                                return res.status(500).json({ message: "Impossible de créer la session unique id !" });
-                            }
-                            const sqlInsert = "INSERT INTO panier (quantity, commande_valider, numerocommande, id_produit, id_users) VALUES (?,?,?,?,?)";
-                            connection.query(sqlInsert, [qtyToInsert, 1, req.session.OrderCommand, idProduit, myId], (err, insertResult) => {
-                                if(err){
-                                    return res.status(401).json({ message: "Impossible d'insérer la requête !"}); 
-                                }
-                            });
-                            return res.status(200).json({ message: "Session unique id créée", orderCommand: req.session.OrderCommand });
-                        });
-                    } else { 
-                        const sqlInsert = "INSERT INTO panier (quantity, commande_valider, numerocommande, id_produit, id_users) VALUES (?,?,?,?,?)";
-                        connection.query(sqlInsert, [qtyToInsert, 1, req.session.OrderCommand, idProduit, myId], (err, insertResult) => {
-                            if(err){
-                                return res.status(401).json({ message: "Impossible d'insérer la requête !"}); 
-                            }
-                        });
-                        return res.status(200).json({ message: "Session unique id existante", orderCommand: req.session.OrderCommand });
-                    }  
-            }
-            
+                    return res.status(200).json({ status: "success", message: "Produit ajouté au panier", numerocommande });
+                });
+            });
+        }
     });
 });
 
@@ -362,16 +392,15 @@ app.post("/supprimerPanier", checkSession, (req, res) => {
                 return res.status(401).json({ message: "Impossible d'envoyer la requête de comptage" });
             }
 
-            const produitsRestants = resultatCount[0].count;
-            console.log(produitsRestants);
+            const produitsRestants = resultatCount[0].count; 
 
             if (produitsRestants >= 1 && produitsRestants < 2 && req.session.OrderCommand) {
                 delete req.session.OrderCommand;
                 req.session.save(err => {
                     if (err) {
                         return res.status(401).json({ message: "Impossible de détruire la session commande !" });
-                    }
-                    // Ici on renvoie la réponse seulement APRÈS sauvegarde réussie
+                    } 
+                    
                     return res.status(200).json({ message: "Produit supprimé et session OrderCommand supprimée car il reste 1 produit." });
                 });
             } else { 
