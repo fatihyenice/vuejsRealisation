@@ -1,7 +1,12 @@
 <template>
     <div class="container" v-if="auth.isLogged">
+
+        <div class="error-message" v-if="panier.error" role="alert">
+            {{ panier.error }}
+        </div>
+
         <div class="box">
-            <div class="content">
+            <div class="content" v-if="!panier.passed.passed">
                 <div class="content-box">
                     <h1>Panier</h1>
 
@@ -22,11 +27,13 @@
                         TOTAL: {{ panier.totalPrix }}€
                     </div>
 
-                    <div class="boutton-confirmer-panier">
+                    <div class="boutton-confirmer-panier" @click="panier.etapeLivraison">
                         Étape suivante
                     </div>
                 </div>
             </div>
+
+            <SecondEtapeCommande v-if="panier.passed.passed" />
         </div>
     </div>
 
@@ -45,7 +52,7 @@ import ProduitPanier from "./ProduitPanier.vue";
 import { authStore } from "@/stores/auth";
 import { computed } from "vue";
 import { panierStore } from "@/stores/panier";
-
+import SecondEtapeCommande from "./SecondEtapeCommande.vue";
 
 const auth = authStore();
 const panier = panierStore();

@@ -59,11 +59,27 @@ export const panierStore = defineStore('panier', () => {
           console.log("Impossible d'envoyer la requête côté front-end !")
         }
     }
+
+    const passed = ref(false);
+    const error = ref(false);
+    const etapeLivraison = async() => {
+        try {
+          const requete = await app.get("/livraisonPass");
+          if(requete.data.passed === true){
+            passed.value = requete.data;
+            error.value = false;
+          }else{
+            error.value = "Votre panier est vide !";
+          }
+        }catch(e) {
+          console.log("Impossible d'envoyer la requête côté front-end: " + e);
+        }
+    }
    
     watch(myId, (newId) => {
       if (newId) countPanier();
     }, { immediate: true }); 
   
-    return { count, countPanier, supprimerProduit, recupPanier, totalPrix, recupDonnees };
+    return { count, countPanier, passed, error, etapeLivraison, supprimerProduit, recupPanier, totalPrix, recupDonnees };
   });
   
