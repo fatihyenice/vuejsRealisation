@@ -195,8 +195,8 @@ app.post('/login', (req, res) => {
                     if (datesASupprimer.length === 0) {
                         return res.status(200).json({ message: "Connecté ! Aucun panier ancien à supprimer." });
                     } 
-                    const reqDelete = "DELETE FROM panier WHERE id_users = ? AND dateheure IN (?)";
-                    connection.query(reqDelete, [req.session.userId, datesASupprimer], (erreurDel, resultatDel) => {
+                    const reqDelete = "UPDATE panier SET inactive = ? WHERE id_users = ? AND dateheure IN (?)";
+                    connection.query(reqDelete, [1,req.session.userId, datesASupprimer], (erreurDel, resultatDel) => {
                         if (erreurDel) {
                             return res.status(500).json({ message: "Impossible de supprimer les anciennes commandes !" });
                         }
@@ -267,16 +267,16 @@ app.post('/getPanier', checkSession, (req,res) => {
         return res.status(404).json({message: "Impossible de récuperer l'Id de l'utilisateur !"})
     }
 
-    const sql = "SELECT * FROM panier WHERE id_users = ?";
-    const donnees = userId;
+    const sql = "SELECT * FROM panier WHERE id_users = ? AND inactive = ?";
+    const donnees = [userId, 0];
 
     connection.query(sql,donnees, (err,result) => {
         if(result.length == 0){
             return res.status(200).json([]);
         }
 
-        const sql2 = "SELECT * FROM panier p INNER JOIN produits prod ON p.id_produit = prod.id_produit WHERE p.id_users = ?";
-        const donnees2 = userId;
+        const sql2 = "SELECT * FROM panier p INNER JOIN produits prod ON p.id_produit = prod.id_produit WHERE p.id_users = ? AND p.inactive = ?";
+        const donnees2 = [userId, 0];
 
         connection.query(sql2,donnees2, (err, resultat) => {
             if(err){
@@ -301,7 +301,7 @@ app.post("/addProduitPanier", checkSession, (req, res) => {
     if (quantity <= 0) {
         return res.status(200).json({ status: "error", message: "La quantité ne peut pas être inférieure à 1 ou égale à 0." });
     }
- 
+
     const sqlverif = "SELECT * FROM panier WHERE id_produit = ? AND id_users = ?";
     connection.query(sqlverif, [idProduit, myId], (err, result) => {
         if (err) {
@@ -309,23 +309,68 @@ app.post("/addProduitPanier", checkSession, (req, res) => {
         }
 
         if (result.length > 0) {
-            // Produit déjà présent : on met à jour la quantité
-            let newQuantity = result[0].quantity + quantity;
-            if (newQuantity > 5) {
-                newQuantity = 5;
-                return res.status(200).json({ status: "error", message: "Quantité maximum atteinte (5 produits) !", quantity: newQuantity });
-            }
+            const hasInactive = result.some(p => p.inactive === 1);
 
-            const sqlUpdate = "UPDATE panier SET quantity = ? WHERE id_produit = ? AND id_users = ?";
-            connection.query(sqlUpdate, [newQuantity, idProduit, myId], (err) => {
-                if (err) {
-                    return res.status(500).json({ status: "error", message: "Erreur lors de la mise à jour", error: err });
+            if (hasInactive) { 
+                const sqlGetOrder = `
+                    SELECT numerocommande 
+                    FROM panier 
+                    WHERE id_users = ? 
+                      AND commande_valider = 1 
+                      AND inactive = 0
+                      AND DATE(dateheure) = CURDATE() 
+                    ORDER BY dateheure DESC 
+                    LIMIT 1`;
+                
+                connection.query(sqlGetOrder, [myId], (err, orderResult) => {
+                    if (err) {
+                        return res.status(500).json({ status: "error", message: "Erreur lors de la récupération de la commande active", error: err });
+                    }
+
+                    let numerocommande;
+                    if (orderResult.length > 0) {
+                        numerocommande = orderResult[0].numerocommande;
+                    } else {
+                        const { v4: uuidv4 } = require('uuid');
+                        numerocommande = uuidv4();
+                    }
+
+                    const qtyToInsert = quantity > 5 ? 5 : quantity;
+                    const sqlInsert = "INSERT INTO panier (quantity, dateheure, commande_valider, numerocommande, id_produit, id_users) VALUES (?, ?, 1, ?, ?, ?)";
+                    connection.query(sqlInsert, [qtyToInsert, new Date(), numerocommande, idProduit, myId], (err) => {
+                        if (err) {
+                            return res.status(500).json({ status: "error", message: "Erreur lors de l'insertion du produit dans le panier", error: err });
+                        }
+                        return res.status(200).json({ status: "success", message: "Produit ajouté au panier", numerocommande });
+                    });
+                });
+
+            } else { 
+                let newQuantity = result[0].quantity + quantity;
+                if (newQuantity > 5) {
+                    newQuantity = 5;
+                    return res.status(200).json({ status: "error", message: "Quantité maximum atteinte (5 produits) !", quantity: newQuantity });
                 }
-                return res.status(200).json({ status: "success", message: "Quantité mise à jour", quantity: newQuantity });
-            });
-        } else {
-            // Produit non présent : on doit vérifier s'il existe une commande active aujourd'hui pour l'utilisateur
-            const sqlGetOrder = "SELECT numerocommande FROM panier WHERE id_users = ? AND commande_valider = 1 AND DATE(dateheure) = CURDATE() LIMIT 1";
+
+                const sqlUpdate = "UPDATE panier SET quantity = ? WHERE id_produit = ? AND id_users = ?";
+                connection.query(sqlUpdate, [newQuantity, idProduit, myId], (err) => {
+                    if (err) {
+                        return res.status(500).json({ status: "error", message: "Erreur lors de la mise à jour", error: err });
+                    }
+                    return res.status(200).json({ status: "success", message: "Quantité mise à jour", quantity: newQuantity });
+                });
+            }
+        } else { 
+            const sqlGetOrder = `
+                SELECT numerocommande 
+                FROM panier 
+                WHERE id_users = ? 
+                  AND commande_valider = 1 
+                  AND inactive = 0
+                  AND DATE(dateheure) = CURDATE() 
+                ORDER BY dateheure DESC 
+                LIMIT 1`;
+            
             connection.query(sqlGetOrder, [myId], (err, orderResult) => {
                 if (err) {
                     return res.status(500).json({ status: "error", message: "Erreur lors de la récupération de la commande active", error: err });
@@ -341,7 +386,6 @@ app.post("/addProduitPanier", checkSession, (req, res) => {
 
                 const qtyToInsert = quantity > 5 ? 5 : quantity;
                 const sqlInsert = "INSERT INTO panier (quantity, dateheure, commande_valider, numerocommande, id_produit, id_users) VALUES (?, ?, 1, ?, ?, ?)";
-
                 connection.query(sqlInsert, [qtyToInsert, new Date(), numerocommande, idProduit, myId], (err) => {
                     if (err) {
                         return res.status(500).json({ status: "error", message: "Erreur lors de l'insertion du produit dans le panier", error: err });
@@ -353,6 +397,7 @@ app.post("/addProduitPanier", checkSession, (req, res) => {
     });
 });
 
+
 app.post("/getCountPanier", checkSession, (req, res) => {
     const monId = req.body.monId;
 
@@ -360,9 +405,9 @@ app.post("/getCountPanier", checkSession, (req, res) => {
         return res.status(400).json({ status: "error", message: "ID utilisateur manquant" });
     }
 
-    const sql = "SELECT SUM(quantity) AS count FROM panier WHERE id_users = ?";
+    const sql = "SELECT SUM(quantity) AS count FROM panier WHERE id_users = ? AND inactive = ?";
 
-    connection.query(sql, [monId], (err, result) => {
+    connection.query(sql, [monId, 0], (err, result) => {
         if (err) {
             return res.status(500).json({ status: "error", message: "Erreur lors de la récupération du panier", error: err });
         }
@@ -378,8 +423,8 @@ app.post("/supprimerPanier", checkSession, (req, res) => {
         return res.status(404).json({ message: "Impossible de récupérer l'id de l'utilisateur ou l'id produit !" });
     } 
 
-    const requeteSuppression = "DELETE FROM panier WHERE id_produit = ? AND id_users = ?";
-    const donneesSuppression = [idProduit, userId];
+    const requeteSuppression = "UPDATE panier SET inactive = ? WHERE id_produit = ? AND id_users = ?";
+    const donneesSuppression = [1, idProduit, userId];
 
     connection.query(requeteSuppression, donneesSuppression, (err, resultatSuppression) => {
         if (err) {

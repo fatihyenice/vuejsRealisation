@@ -490,6 +490,7 @@ textarea {
   background: transparent;
   width: 100%;
   padding: 10px;
+  position: relative;
 }
 
 .content-box h2 {
@@ -506,13 +507,15 @@ textarea {
 
 .content-box:nth-child(2) {
   border: 1px dashed var(--main-color);
-  align-self: stretch;
   padding: inherit;
-  min-height: 50px;
+  place-self: center;
+  height: 100%;
 }
 
 .content-box:nth-child(3) {
   position: relative;
+  height: 98px;
+  place-self: end;
 }
 
 .content-panier {
@@ -592,8 +595,15 @@ textarea {
   bottom: 0;
   font-size: 1.7em;
   border-top: 1px dashed var(--main-color);
-  text-align: right;
+  text-indent: 13px;
   color: var(--dark-text);
+}
+
+.toprecap {
+  position: absolute;
+  top: 0;
+  margin-top: -280px;
+  display: none;
 }
 
 .countProduit {
@@ -952,6 +962,10 @@ textarea {
 
   .prixTotal {
     font-size: 1.3em;
+  }
+
+  .toprecap {
+    display: block;
   }
 
   .iconBurger {

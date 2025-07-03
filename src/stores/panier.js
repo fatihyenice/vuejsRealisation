@@ -53,8 +53,7 @@ export const panierStore = defineStore('panier', () => {
             idProduit: idProduit 
           }) 
           recupDonnees.value = recupDonnees.value.filter(p => p.id_produit !== idProduit);
-
-    // Mise à jour du compteur local
+ 
     count.value = recupDonnees.value.reduce((acc, p) => acc + p.quantity, 0);
         }catch(e) {
           console.log("Impossible d'envoyer la requête côté front-end !")
