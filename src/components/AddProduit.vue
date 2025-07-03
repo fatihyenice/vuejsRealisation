@@ -1,13 +1,9 @@
 <template>
     <div class="ajout-produit-container" v-if="auth.isLogged">
         <div v-if="auth.user.role == 'admin'">
-            <div class="error-message" v-if="error" role="alert">
-                {{ error }}
-            </div>
+            <ErrorAlert v-if="error">{{ error }}</ErrorAlert>
+            <SuccessAlert v-if="success">{{ success }}</SuccessAlert>
 
-            <div class="success-message" v-if="success" role="alert">
-                {{ success }}
-            </div>
             <h1 class="form-title">Ajouter un produit</h1>
 
             <form @submit.prevent="ajouterProduit" class="formulaire-produit">
@@ -58,6 +54,8 @@ import { authStore } from "@/stores/auth";
 import axios from "axios";
 import { ref } from "vue";
 import { app } from "@/stores/axiosInstance";
+import ErrorAlert from "./ErrorAlert.vue";
+import SuccessAlert from "./SuccessAlert.vue";
 
 const nom_produit = ref('');
 const descriptif_produit = ref('');

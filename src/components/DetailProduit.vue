@@ -1,13 +1,8 @@
 <template>
 
     <div class="container">
-        <div class="error-message" v-if="error" role="alert">
-            {{ error }}
-        </div>
-
-        <div class="success-message" v-if="success" role="alert">
-            {{ success }}
-        </div>
+        <ErrorAlert v-if="error">{{ error }}</ErrorAlert>
+        <SuccessAlert v-if="success">{{ success }}</SuccessAlert>
     </div>
 
     <div v-if="etat === 'loading'" class="d-flex justify-content-center py-5">
@@ -37,6 +32,8 @@ import ProduitDetailDisplay from './ProduitDetailDisplay.vue';
 import { app } from '@/stores/axiosInstance';
 import { authStore } from '@/stores/auth';
 import { panierStore } from '@/stores/panier';
+import ErrorAlert from './ErrorAlert.vue';
+import SuccessAlert from './SuccessAlert.vue';
 
 const route = useRoute();
 const auth = authStore();

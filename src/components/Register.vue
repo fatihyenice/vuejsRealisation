@@ -1,12 +1,8 @@
 <template>
     <div class="ajout-produit-container" v-if="!auth.isLogged">
-        <div class="error-message" v-if="error" role="alert">
-            {{ error }}
-        </div>
+        <ErrorAlert v-if="error">{{ error }}</ErrorAlert>
+        <SuccessAlert v-if="success">{{ success }}</SuccessAlert>
 
-        <div class="success-message" v-if="success" role="alert">
-            {{ success }}
-        </div>
         <h1>Inscription</h1>
         <form @submit.prevent="inscription" class="formulaire-produit">
             <div class="form-group">
@@ -47,6 +43,8 @@
 import { ref } from "vue";
 import { authStore } from "@/stores/auth";
 import { app } from "@/stores/axiosInstance";
+import ErrorAlert from "./ErrorAlert.vue";
+import SuccessAlert from "./SuccessAlert.vue";
 
 const nom = ref('');
 const prenom = ref('');

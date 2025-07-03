@@ -1,12 +1,7 @@
 <template>
     <div class="ajout-produit-container" v-if="!auth.isLogged">
-        <div class="error-message" v-if="error" role="alert">
-            {{ error }}
-        </div>
 
-        <div class="success-message" v-if="success" role="alert">
-            {{ success }}
-        </div>
+        <ErrorAlert v-if="error">{{ error }}</ErrorAlert>
 
         <h1>Connexion</h1>
         <form @submit.prevent="handleConnect">
@@ -42,13 +37,9 @@
 
                     <div class="droite-boite-context">
                         <h3>Modifier mes informations personnelles</h3>
-                        <div class="error-message" v-if="errorModifProfil" role="alert">
-                            {{ errorModifProfil }}
-                        </div>
 
-                        <div class="success-message" v-if="successModifProfil" role="alert">
-                            {{ successModifProfil }}
-                        </div>
+                        <ErrorAlert v-if="errorModifProfil">{{ errorModifProfil }}</ErrorAlert>
+                        <SuccessAlert v-if="successModifProfil">{{ successModifProfil }}</SuccessAlert>
 
                         <form class="information-perso" :key="profil">
                             <div>
@@ -77,6 +68,8 @@ import { authStore } from '@/stores/auth';
 import MenuProfil from './MenuProfil.vue';
 import MenuParametres from './MenuParametres.vue';
 import { app } from '@/stores/axiosInstance';
+import ErrorAlert from './ErrorAlert.vue';
+import SuccessAlert from './SuccessAlert.vue';
 
 const adressemail = ref("");
 const mdp = ref("");

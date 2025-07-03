@@ -1,11 +1,9 @@
 <template>
-  <header>
-    <!-- Topbar -->
+  <header> 
     <div class="topbar">
       <p>Livraison gratuite à partir de 50€ 🎁</p>
     </div>
-
-    <!-- Main Header -->
+ 
     <div class="main-header">
       <RouterLink to="/" class="logo">
         <i class="bi bi-bag-heart-fill"></i> FYDEV-Shop

@@ -1,9 +1,9 @@
 <template>
     <div class="container" v-if="auth.isLogged">
 
-        <div class="error-message" v-if="panier.error" role="alert">
-            {{ panier.error }}
-        </div>
+        <ErrorAlert v-if="panier.error" :key="Date.now()">
+            Votre panier est vide !
+        </ErrorAlert>
 
         <div class="box">
             <div class="content" v-if="!panier.passed.passed">
@@ -53,6 +53,7 @@ import { authStore } from "@/stores/auth";
 import { computed } from "vue";
 import { panierStore } from "@/stores/panier";
 import SecondEtapeCommande from "./SecondEtapeCommande.vue";
+import ErrorAlert from "./ErrorAlert.vue";
 
 const auth = authStore();
 const panier = panierStore();
