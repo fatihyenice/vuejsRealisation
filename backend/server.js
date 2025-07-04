@@ -246,19 +246,34 @@ function checkSession(req,res,next){
     if(req.session && req.session.userId){
         next();
     }else{
-        res.status(401).json({ message: "Vous n'êtes pas connecté, veuillez vous connecter !"})
+        return res.status(401).json({ message: "Vous n'êtes pas connecté, veuillez vous connecter !"})
     }
 } 
 
-app.get('/logout', (req, res) => { 
+function checkLivraisonSession(req,res,next){
+    if(req.session.Passed){
+        next();
+    }else{
+        return res.status(401).json({ message: "Vous n'êtes pas à l'étape de livraison"})
+    }
+}
+
+app.get('/logout', (req, res) => {
     if (req.session.userId) {
-        req.session.destroy(err => {
-            console.error("Erreur lors de la destruction de session :", err);
-        })
-        res.clearCookie('connect.sid'); 
-        res.json({ message: "Déconnecté avec succès" }); 
-    }  
-});
+      req.session.destroy(err => {
+        if (err) {
+          console.error("Erreur lors de la destruction de session :", err);
+          return res.status(500).json({ message: "Erreur lors de la déconnexion." });
+        }
+        // Nettoyage du cookie avec path (important)
+        res.clearCookie('connect.sid', { path: '/' });
+        return res.json({ message: "Déconnecté avec succès" });
+      });
+    } else {
+      res.status(400).json({ message: "Pas de session active." });
+    }
+  });
+  
 
 app.post('/getPanier', checkSession, (req,res) => {
     const userId = req.session.userId;
@@ -480,8 +495,31 @@ app.get("/livraisonPass", checkSession, (req, res) => {
             return res.status(500).json({ message: "Impossible d'exécuter la requête !" });
         }
 
-        return res.status(200).json({ passed: resultat.length === 1 });
+        if (resultat.length === 0) { 
+            return res.status(404).json({ passed: false });
+        }
+
+        req.session.Passed = true;
+        req.session.save(err => {
+            if(err){
+                return res.status(401).json({message: "Impossible d'enregistrer la session passed !"})
+            }
+            return res.status(200).json({ passed: req.session.Passed });
+        })
     })
+});
+
+app.get("/checkSessionLivraison", checkSession, (req,res) => {
+    if(req.session.Passed){
+        req.session.save(err => {
+            if(err){
+                return res.status(401).json({message: "Impossible d'enregistrer la session passed !"})
+            }
+            return res.status(200).json({ passed: req.session.Passed });
+        })
+    }else{
+        return res.status(200).json({ passed: false });
+    }
 })
 
 app.listen(3000, () => {

@@ -23,16 +23,21 @@
 import { panierStore } from '@/stores/panier';
 import chronopost from '@/assets/chronopost-mini.png';
 import dpd from '@/assets/dpd.png';
-import { computed, ref } from 'vue';
-import { watch } from 'vue';
+import { ref } from 'vue';
 import quarantehuit from '@/assets/48.png';
 import Livraison from './livraisons/livraison.vue';
 
 const panier = panierStore();
 
 const prixFinal = ref(panier.totalPrix);
+const emit = defineEmits(['retourPanier']);
 
-const ajoutPrixLivraison = (prix) => {
-    prixFinal.value = `${panier.totalPrix + prix.prix} commande: ${panier.totalPrix}`
+const ajoutPrixLivraison = async (prix) => {
+    prixFinal.value = `${panier.totalPrix + prix.prix}`
+    await panier.checkEtape();
+
+    if (!panier.passed) {
+        emit('retourPanier');
+    }
 }
 </script>

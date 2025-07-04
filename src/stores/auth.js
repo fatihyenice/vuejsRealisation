@@ -1,11 +1,13 @@
 import { ref } from "vue";
 import { defineStore } from "pinia"; 
 import { app } from "./axiosInstance"; 
+import { panierStore } from "./panier"; 
 
 export const authStore = defineStore("auth", () => {
 
   const isLogged = ref(false);
   const user = ref(null); 
+  const panier = panierStore();
 
   const checkSession = async () => {
     try {
@@ -29,6 +31,7 @@ export const authStore = defineStore("auth", () => {
       await app.get("/logout");
       isLogged.value = false;
       localStorage.setItem("auth_event", JSON.stringify({ type: "logout", time: Date.now() }));
+      panier.reset();
     } catch (e) {
       console.error("Erreur de logout", e);
     }
@@ -48,6 +51,7 @@ export const authStore = defineStore("auth", () => {
       isLogged.value = !!res.data.userId;
       localStorage.setItem('auth_event', JSON.stringify({ type: 'login', time: Date.now() }));  
       checkSession();
+      panier.reset();
       return { success: true };
     } catch (e) { 
       return { success: false, error: e.response?.data?.message || 'Erreur inconnue' };

@@ -1,6 +1,7 @@
 <template>
     <div>
-        <input type="radio" :value="nomLivreur" :id="nomLivreur" v-model="choix" @change="envoyer" name="livraison">
+        <input type="radio" :value="nomLivreur" no- :id="nomLivreur" v-model="choix" @change="envoyer"
+            name="livraison">
         <label :for="nomLivreur"><img :src="imageurl" alt="logo de chronopost" width="40">
             {{ nomLivreur }}
             {{ prix }}€</label>

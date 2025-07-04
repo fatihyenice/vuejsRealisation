@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { authStore } from './auth';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { app } from './axiosInstance';
 
 export const panierStore = defineStore('panier', () => {
@@ -62,24 +62,51 @@ export const panierStore = defineStore('panier', () => {
 
     const passed = ref(false);
     const error = ref(false);
+
     const etapeLivraison = async() => {
-        try {
-          const requete = await app.get("/livraisonPass");
-          if(requete.data.passed === true){
-            passed.value = requete.data;
-            error.value = false;
-          }else{
-            error.value = "Votre panier est vide !";
-          }
-        }catch(e) {
-          console.log("Impossible d'envoyer la requête côté front-end: " + e);
+      try {
+        const requete = await app.get("/livraisonPass");
+        
+        if (requete.data.passed === true) {
+          passed.value = true;
+          error.value = null;
+        } else {
+          passed.value = false;
+          error.value = "Votre panier est vide !";
         }
+        
+      }catch(e) {
+        console.log("Impossible d'envoyer la requête côté front-end: " + e);
+      }
+    }
+
+    const checkEtape = async() => {
+      try {
+        const requete = await app.get("/checkSessionLivraison"); 
+        if (requete.data.passed === true) {
+          passed.value = true;
+          error.value = null;
+        } else {
+          passed.value = false;
+          error.value = "Votre panier est vide !";
+        }
+        
+      }catch(e) {
+        console.log("Impossible d'envoyer la requête côté front-end: " + e);
+      }
+    }  
+
+    const reset = () => {
+      count.value = 0;
+      recupDonnees.value = null;
+      passed.value = false;
+      error.value = false;
     }
    
     watch(myId, (newId) => {
       if (newId) countPanier();
-    }, { immediate: true }); 
-  
-    return { count, countPanier, passed, error, etapeLivraison, supprimerProduit, recupPanier, totalPrix, recupDonnees };
+    }, { immediate: true });  
+
+    return { count, countPanier, checkEtape,reset, passed, error, etapeLivraison, supprimerProduit, recupPanier, totalPrix, recupDonnees };
   });
   

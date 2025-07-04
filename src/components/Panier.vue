@@ -1,12 +1,8 @@
 <template>
     <div class="container" v-if="auth.isLogged">
 
-        <ErrorAlert v-if="panier.error" :key="Date.now()">
-            Votre panier est vide !
-        </ErrorAlert>
-
         <div class="box">
-            <div class="content" v-if="!panier.passed.passed">
+            <div class="content" v-if="!panier.passed">
                 <div class="content-box">
                     <h1>Panier</h1>
 
@@ -33,7 +29,7 @@
                 </div>
             </div>
 
-            <SecondEtapeCommande v-if="panier.passed.passed" />
+            <SecondEtapeCommande v-else @retourPanier="retourEtapePanier" />
         </div>
     </div>
 
@@ -66,5 +62,9 @@ onMounted(async () => {
     }
     panier.totalPrix
     panier.recupPanier();
-}); 
+});
+
+const retourEtapePanier = () => {
+    console.log("Retour à l'étape panier !");
+};
 </script>
