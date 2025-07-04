@@ -1,5 +1,5 @@
 <template>
-    <div class="container-livraison">
+    <div class="container-livraison" v-if="panier.recupDonnees.length > 0">
         <h2>Livraison</h2>
 
         <div class="big-container-livraison">
@@ -16,6 +16,10 @@
                 TOTAL: {{ prixFinal }}€
             </div>
         </div>
+    </div>
+
+    <div v-else>
+        Votre panier est vide !
     </div>
 </template>
 
@@ -35,9 +39,10 @@ const emit = defineEmits(['retourPanier']);
 const ajoutPrixLivraison = async (prix) => {
     prixFinal.value = `${panier.totalPrix + prix.prix}`
     await panier.checkEtape();
-
     if (!panier.passed) {
         emit('retourPanier');
+    } else {
+        panier.passageEtapeFinal();
     }
 }
 </script>

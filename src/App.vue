@@ -15,6 +15,7 @@ const route = useRoute();
 onMounted(() => {
   panier.countPanier();
   panier.checkEtape();
+  panier.passageEtapeFinal();
 });
 
 watch(() => route.fullPath, () => {

@@ -6,7 +6,8 @@ import { app } from './axiosInstance';
 export const panierStore = defineStore('panier', () => {
     const auth = authStore();
     const myId = computed(() => auth.user?.userId);
-    const count = ref(0);
+    const count = ref(0); 
+    const passFinal = ref(false);
   
     const countPanier = async () => {
       if (!myId.value) {
@@ -82,7 +83,7 @@ export const panierStore = defineStore('panier', () => {
 
     const checkEtape = async() => {
       try {
-        const requete = await app.get("/checkSessionLivraison"); 
+        const requete = await app.get("/checkSessionLivraison");  
         if (requete.data.passed === true) {
           passed.value = true;
           error.value = null;
@@ -96,17 +97,33 @@ export const panierStore = defineStore('panier', () => {
       }
     }  
 
+    const passageEtapeFinal = async() => {
+      try {
+        const requete = await app.get("/passageEtapeFinal");
+        
+        if (requete.data.passFinal === true) {
+          passFinal.value = true; 
+        } else {
+          passFinal.value = false; 
+        }
+        
+      }catch(e) {
+        console.log("Impossible d'envoyer la requête côté front-end: " + e);
+      }
+    }
+
     const reset = () => {
       count.value = 0;
       recupDonnees.value = null;
       passed.value = false;
       error.value = false;
+      passFinal.value = false;
     }
    
     watch(myId, (newId) => {
       if (newId) countPanier();
     }, { immediate: true });  
 
-    return { count, countPanier, checkEtape,reset, passed, error, etapeLivraison, supprimerProduit, recupPanier, totalPrix, recupDonnees };
+    return { count, countPanier,passageEtapeFinal, passFinal, checkEtape,reset, passed, error, etapeLivraison, supprimerProduit, recupPanier, totalPrix, recupDonnees };
   });
   

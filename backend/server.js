@@ -504,7 +504,7 @@ app.get("/livraisonPass", checkSession, (req, res) => {
             if(err){
                 return res.status(401).json({message: "Impossible d'enregistrer la session passed !"})
             }
-            return res.status(200).json({ passed: req.session.Passed });
+            return res.status(200).json({ passed: req.session.Passed, passFinal: true });
         })
     })
 });
@@ -517,9 +517,21 @@ app.get("/checkSessionLivraison", checkSession, (req,res) => {
             }
             return res.status(200).json({ passed: req.session.Passed });
         })
-    }else{
-        return res.status(200).json({ passed: false });
+    }else if(req.session.passFinal && req.session.Passed){
+        return res.status(200).json({ passed: req.session.Passed, passFinal: true }); 
+    }else{ 
+        return res.status(200).json({ passed: false, passFinal: false }); 
     }
+})
+
+app.get('/passageEtapeFinal', checkLivraisonSession, (req, res) => {
+    req.session.passFinal = true;
+    req.session.save(err => {
+        if(err){
+            return res.status(401).json({message: "Impossible d'enregistrer la session final !"})
+        }
+        return res.status(200).json({ passFinal: req.session.passFinal });
+    })
 })
 
 app.listen(3000, () => {

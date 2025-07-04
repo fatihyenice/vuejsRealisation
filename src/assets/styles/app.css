@@ -965,6 +965,39 @@ textarea {
   color: var(--main-color);
 }
 
+.recap-final-container {
+  background: #fff;
+  padding: 10px;
+  position: relative;
+}
+
+.recap-final-filtre {
+  background: #ffffffef;
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  cursor: not-allowed;
+  width: 100%;
+  height: 100%;
+  font-size: 2em;
+  color: var(--main-color);
+  text-transform: uppercase;
+  z-index: 44;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+
+.recap-final-container h2 {
+  margin: 20px;
+  font-weight: 600;
+  border-bottom: 1px dashed #dedede;
+  padding-bottom: 26px;
+  text-align: left;
+  color: var(--main-color);
+}
+
 @media screen and (min-width: 760px) {
   .content {
     display: grid;

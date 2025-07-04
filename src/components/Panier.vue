@@ -1,6 +1,5 @@
 <template>
     <div class="container" v-if="auth.isLogged">
-
         <div class="box">
             <div class="content" v-if="!panier.passed">
                 <div class="content-box">
@@ -30,6 +29,8 @@
             </div>
 
             <SecondEtapeCommande v-else @retourPanier="retourEtapePanier" />
+
+            <final v-if="panier.passed && panier.recupDonnees.length > 0" />
         </div>
     </div>
 
@@ -49,7 +50,7 @@ import { authStore } from "@/stores/auth";
 import { computed } from "vue";
 import { panierStore } from "@/stores/panier";
 import SecondEtapeCommande from "./SecondEtapeCommande.vue";
-import ErrorAlert from "./ErrorAlert.vue";
+import final from "./livraisons/final.vue";
 
 const auth = authStore();
 const panier = panierStore();
@@ -64,7 +65,5 @@ onMounted(async () => {
     panier.recupPanier();
 });
 
-const retourEtapePanier = () => {
-    console.log("Retour à l'étape panier !");
-};
+const retourEtapePanier = () => { };
 </script>
